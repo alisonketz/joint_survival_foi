@@ -1,0 +1,16 @@
+"data_cases","num_observations"
+"n_fit_hunt_neg",43785
+"n_fit_hunt_pos",3812
+"n_fit_sus_cens_posttest",66
+"n_fit_sus_cens_postno",259
+"n_fit_sus_mort_posttest",428
+"n_fit_sus_mort_postno",7
+"n_fit_icap_cens",2
+"n_fit_icap_mort",61
+"n_fit_rec_neg_cens_posttest",2
+"n_fit_rec_neg_cens_postno",12
+"n_fit_rec_neg_mort",5
+"n_fit_rec_pos_cens",1
+"n_fit_rec_pos_mort",8
+"n_fit_idead",108
+"n_fit_endlive",100

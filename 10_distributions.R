@@ -1725,5 +1725,3 @@ nimble::registerDistributions(list(
 
 # for a user-defined distribution
 assign('dNegCapPosMort', dNegCapPosMort, envir = .GlobalEnv)
-
-

@@ -251,12 +251,12 @@ assign('dSusHarvest', dSusHarvest, envir = .GlobalEnv)
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
-###   uninfected radio-marked deer interval censored:
-###   test neg at cap and tested at interval censoring
+###   uninfected radio-marked deer right censored:
+###   test neg at cap and tested at right censoring
 ###
 ###   d_fit_sus_cens_posttest
 ###
-###   test neg at cap and Not tested at interval censoring
+###   test neg at cap and Not tested at right censoring
 ###
 ###   d_fit_sus_cens_postno
 ###
@@ -267,10 +267,11 @@ assign('dSusHarvest', dSusHarvest, envir = .GlobalEnv)
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
-###   Uninfected radio-marked deer interval censor:
+###   Uninfected radio-marked deer right censored:
 ###   Test neg at cap and censoring
 ###
 ###   d_fit_sus_cens_postno
+###   d_endlive
 ###
 #######################################################################
 
@@ -397,7 +398,7 @@ assign('dSusCensNo', dSusCensNo, envir = .GlobalEnv)
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
-###   Uninfected radio-marked deer interval censor:
+###   Uninfected radio-marked deer right censor:
 ###   Test neg at cap and censoring
 ###
 ###   d_fit_sus_cens_posttest
@@ -634,7 +635,7 @@ dSusMortNoTest <- nimble::nimbleFunction(
         e = double(0), #e, age of entry
         r = double(0), #r, age of last known alive
         s = double(0), #s, age of known mortality
-        dn1 = double(0), #interval of last test negative
+        dn1 = double(0), #right of last test negative
         beta0_sus = double(0),
         age_effect_surv = double(1),
         period_effect_surv = double(1),
@@ -767,7 +768,7 @@ dIcapCens <- nimble::nimbleFunction(
         x = double(),
         e = double(0), #e, age of entry
         r = double(0), #r, age of last known alive
-        dn1 = double(0), #interval of last test negative
+        dn1 = double(0), #right of last test negative
         age2date_surv = double(0),
         beta0_sus = double(0),
         beta0_inf = double(0),
@@ -963,9 +964,9 @@ nimble::registerDistributions(list(
     dIcapMort = list(
         BUGSdist = 'dIcapMort(e,r,s,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("x = double(0)",
-                    "e = double(0)", 
-                    "r = double(0)", 
-                    "s = double(0)", 
+                    "e = double(0)",
+                    "r = double(0)",
+                    "s = double(0)",
                     "age2date_surv = double(0)",
                     "beta0_inf = double(0)",
                     "beta0_sus = double(0)",
@@ -992,129 +993,20 @@ nimble::registerDistributions(list(
 assign('dIcapMort', dIcapMort, envir = .GlobalEnv)
 
 
-#######################################################################
-###
-###   User defined distribution for likelihood for
-###   infected deer that were test neg at capture,
-###   then test negative at recap,
-###   that die
-###
-###   d_fit_rec_neg_mort
-###
-#######################################################################
-
-dRecNegMort <- nimble::nimbleFunction(
-    run = function(
-        ### argument type declarations
-        x = double(0),
-        e = double(0), #e, age of entry
-        r = double(0), #r, age of last known alive
-        s = double(0), #s, age of mortality
-        dn1 = double(0), #interval of last test negative
-        age2date_surv = double(0),
-        sex = double(0),
-        beta_sex = double(0),
-        age2date_foi = double(0),
-        f_age_foi = double(1),
-        m_age_foi = double(1),
-        age_lookup_f = double(1),
-        age_lookup_m = double(1),
-        period_lookup=double(1),
-        f_period_foi=double(1),
-        m_period_foi=double(1),
-        space = double(0),
-        log = double()
-        ) {
-
-    llik <- 0 #intialize log-likelihood
-    lam_foi <- nimNumeric(s)
-    lam_sus <- nimNumeric(s)
-    lam_inf <- nimNumeric(s)
-
-    #############################################
-    # preliminary hazards for the likelihood
-    #############################################
-
-    inx_period_surv <- (e + age2date_surv):(s - 1 + age2date_surv)
-    #survival hazard for susceptible deer
-    lam_sus[1:(s - e)] <- exp(rep(beta0_sus, s - e) +
-                          age_effect_surv[1:(s - e)] +
-                          period_effect_surv[indx_period_surv[1:(s - e)]] +
-                          rep(beta_sex * sex, s - e)
-                      )
-    #force of infection infection hazard
-    indx_foi_age_f <- age_lookup_f[1:(s - 1)]
-    indx_foi_age_m <- age_lookup_m[1:(s - 1)]
-    indx_foi_period <- period_lookup[(1 + age2date_foi):(r - 1 + age2date_foi)]
-
-    lam_foi[1:(s - 1)] <- exp(rep(space, s - 1) +
-            sex * (f_age_foi[indx_foi_age_f[1:(s - 1)]] +
-                   f_period_foi[indx_foi_period[1:(s - 1)]])
-            (1 - sex) * (m_age_foi[indx_foi_age_m[1:(s - 1)]] +
-                         m_period_foi[indx_foi_period[1:(s - 1)]])
-    )
-    #######################################
-    ### calculating the joint likelihood
-    #######################################
-    for (k in 1:(dn1 - 1)) {
-        liktemp[k] <- lambda_foi[k] * exp(-sum(lam_sus[1:k]))
-    }
-    lik <- exp(-sum(lam_sus[e:(r - 1)])) *
-           (1 - exp(sum(lam_sus[(r:(s - 1))]))) *
-           exp(-sum(lambda_foi[dn1:(s - 1)])) *
-           sum(liktemp[1:(dn1 - 1)])
-
-    llik <- log(lik)
-
-    returnType(double(0))
-    if(log) return(llik) else return(exp(llik))    ## return log-likelihood
-  })
-
-nimble::registerDistributions(list(
-    dRecNegMort = list(
-        BUGSdist = 'dRecNegMort(e,r,s,dn1,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
-        types = c("x = double(0)",
-                  "e = double(0)",
-                  "r = double(0)",
-                  "dn = double(0)",
-                  "age2date_surv = double(0)",
-                  "beta0_inf = double(0)",
-                  "beta0_sus = double(0)",
-                  "period_effect_surv = double(1)",
-                  "age_effect_surv = double(1)",
-                  "sex = double(0)",
-                  "beta_sex = double(0)",
-                  "age2date_foi = double(0)",
-                  "f_age_foi = double(1)",
-                  "m_age_foi = double(1)",
-                  "age_lookup_f = double(1)",
-                  "age_lookup_m = double(1)",
-                  "period_lookup=double(1)",
-                  "f_period_foi=double(1)",
-                  "m_period_foi=double(1)",
-                  "space = double(0)",
-                  "log = double(0)"
-                  ),
-        discrete = TRUE
-    )
-))
-
-###for a user-defined distribution
-assign('dRecNegMort', dRecNegMort, envir = .GlobalEnv)
 
 
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
 ###   infected deer that were test neg at capture,
-###   then test negative at recap, that are interval censored, 
+###   then test negative at recap, that are right censored, 
 ###   and have been tested post censoring
 ###
-###   d_fit_rec_neg_cens
+###   d_fit_rec_neg_cens_posttest
 ###
 #######################################################################
 
-dRecNegCens <- nimble::nimbleFunction(
+dRecNegCensTest <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
         x = double(0),
@@ -1122,7 +1014,11 @@ dRecNegCens <- nimble::nimbleFunction(
         r = double(0), #r, age of last known alive
         dn1 = double(0), #interval of last test negative
         age2date_surv = double(0),
-        sex = double(0),
+        beta0_sus = double(0),
+        beta0_inf = double(0),
+        age_effect_surv = double(1),
+        period_effect_surv = double(1),
+        sex = double(0), 
         beta_sex = double(0),
         age2date_foi = double(0),
         f_age_foi = double(1),
@@ -1183,8 +1079,8 @@ dRecNegCens <- nimble::nimbleFunction(
   })
 
 nimble::registerDistributions(list(
-    dRecNegCens = list(
-        BUGSdist = 'dRecNegCens(e,r,dn1,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+    dRecNegCensTest = list(
+        BUGSdist = 'dRecNegCensTest(e,r,dn1,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("x = double(0)",
                     "e = double(0)",
                     "r = double(0)",
@@ -1212,7 +1108,252 @@ nimble::registerDistributions(list(
 ))
 
 ###for a user-defined distribution
-assign('dRecNegCens', dRecNegCens, envir = .GlobalEnv)
+assign('dRecNegCensTest', dRecNegCensTest, envir = .GlobalEnv)
+
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   infected deer that were test neg at capture,
+###   then test negative at recap, that are right censored, 
+###   and have been tested post censoring
+###
+###   d_fit_rec_neg_cens_postno
+###
+#######################################################################
+
+dRecNegCensPostNo <- nimble::nimbleFunction(
+    run = function(
+        ### argument type declarations
+        x = double(0),
+        e = double(0), #e, age of entry
+        r = double(0), #r, age of last known alive
+        dn1 = double(0), #interval of last test negative
+        age2date_surv = double(0),
+        beta0_sus = double(0),
+        beta0_inf = double(0),
+        age_effect_surv = double(1),
+        period_effect_surv = double(1),
+        sex = double(0),
+        beta_sex = double(0),
+        age2date_foi = double(0),
+        f_age_foi = double(1),
+        m_age_foi = double(1),
+        age_lookup_f = double(1),
+        age_lookup_m = double(1),
+        period_lookup=double(1),
+        f_period_foi=double(1),
+        m_period_foi=double(1),
+        space = double(0),
+        log = double()
+        ) {
+
+    llik <- 0 #intialize log-likelihood
+    lam_foi <- nimNumeric(r)
+    lam_sus <- nimNumeric(r)
+    lam_inf <- nimNumeric(r)
+
+    #############################################
+    indx_sus_age <- e:(r - 1)
+    n_indx_sus <- r - e
+    indx_sus_period <- (e + age2date_surv):(r - 1 + age2date_surv)
+
+    #survival hazard for susceptible deer
+    lam_sus[e:(r - 1)] <- exp(
+        rep(beta0_sus, n_indx_sus) +
+            age_effect_surv[e:(r - 1)] +
+            period_effect_surv[indx_sus_period[1:n_indx_sus]] +
+            rep(beta_sex * sex, n_indx_sus)
+    )
+
+    #survival hazard while infected
+    lam_inf[1:(r - 1)] <- exp(rep(beta0_inf, (r - 1)) +
+        age_effect_surv[1:(r - 1)] +
+        period_effect_surv[(1 + age2date_surv):(r - 1 + age2date_surv)] +
+        rep(beta_sex * sex, (r - 1))
+        )
+
+    #force of infection infection hazard
+    indx_foi_age_f <- age_lookup_f[1:(r - 1)]
+    indx_foi_age_m <- age_lookup_m[1:(r - 1)]
+    indx_foi_period <- period_lookup[(1 + age2date_foi):(s - 1 + age2date_foi)]
+
+    lam_foi[1:(r - 1)] <- exp(rep(space, r - 1) +
+            sex * (f_age_foi[indx_foi_age_f[1:(r - 1)]] +
+                   f_period_foi[indx_foi_period[1:(r - 1)]])
+            (1 - sex) * (m_age_foi[indx_foi_age_m[1:(r - 1)]] +
+                         m_period_foi[indx_foi_period[1:(r - 1)]])
+    )
+
+    #######################################
+    ### calculating the joint likelihood
+    #######################################
+
+    liktemp[(dn1)] <- lam_foi[(dn1 + 1)] * exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
+
+    for(k in (dn1 + 1):(r - 1)){
+        liktemp[k] <- lam_foi[k] *
+                      exp(-sum(lam_sus[dn1:(k - 1)])) *
+                      exp(-sum(lam_inf[k:(r - 1)]))
+    }
+
+    lik <- exp(-sum(lam_sus[e:dn1])) *
+           exp(-sum(lam_foi[1:dn1])) *
+           sum(liktemp[(e + 1):(r - 1)]) +
+           exp(-sum(lam_foi[1:(r - 1)])) * exp(-sum(lam_sus[e:(r - 1)]))
+
+    llik <- log(lik)
+
+    returnType(double(0))
+    if(log) return(llik) else return(exp(llik))    ## return log-likelihood
+  })
+
+nimble::registerDistributions(list(
+    dRecNegCensPostNo = list(
+        BUGSdist = 'dRecNegCensPostNo(e,r,dn1,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        types = c("x = double(0)",
+                    "e = double(0)",
+                    "r = double(0)",
+                    "dn1 = double(0)",
+                    "age2date_surv = double(0)",
+                    "beta0_inf = double(0)",
+                    "beta0_sus = double(0)",
+                    "period_effect_surv = double(1)",
+                    "age_effect_surv = double(1)",
+                    "sex = double(0)",
+                    "beta_sex = double(0)",
+                    "age2date_foi = double(0)",
+                    "f_age_foi = double(1)",
+                    "m_age_foi = double(1)",
+                    "age_lookup_f = double(1)",
+                    "age_lookup_m = double(1)",
+                    "period_lookup=double(1)",
+                    "f_period_foi=double(1)",
+                    "m_period_foi=double(1)",
+                    "space = double(0)",
+                    "log = double(0)"
+                  ),
+        discrete = TRUE
+    )
+))
+
+###for a user-defined distribution
+assign('dRecNegCensPostNo', dRecNegCensPostNo, envir = .GlobalEnv)
+
+
+
+#######################################################################
+###
+###   User defined distribution for likelihood for
+###   infected deer that were test neg at capture,
+###   then test negative at recap,
+###   that die
+###
+###
+###   d_fit_rec_neg_mort
+###
+#######################################################################
+
+dRecNegMort <- nimble::nimbleFunction(
+    run = function(
+        ### argument type declarations
+        x = double(0),
+        e = double(0), #e, age of entry
+        r = double(0), #r, age of last known alive
+        s = double(0), #s, age of mortality
+        dn1 = double(0), #interval of last test negative
+        age2date_surv = double(0),
+        age_effect_surv = double(1),
+        period_effect_surv = double(1),
+        sex = double(0),
+        beta_sex = double(0),
+        age2date_foi = double(0),
+        f_age_foi = double(1),
+        m_age_foi = double(1),
+        age_lookup_f = double(1),
+        age_lookup_m = double(1),
+        period_lookup=double(1),
+        f_period_foi=double(1),
+        m_period_foi=double(1),
+        space = double(0),
+        log = double(0)
+        ) {
+
+    llik <- 0 #intialize log-likelihood
+    lam_foi <- nimNumeric(s)
+    lam_sus <- nimNumeric(s)
+    lam_inf <- nimNumeric(s)
+
+    #############################################
+    # preliminary hazards for the likelihood
+    #############################################
+
+    #survival hazard for susceptible deer
+    lam_sus[1:(s - e)] <- exp(rep(beta0_sus, s - e) +
+                          age_effect_surv[1:(s - e)] +
+                          period_effect_surv[(e + age2date_surv):(s - 1 + age2date_surv)] +
+                          rep(beta_sex * sex, s - e)
+                      )
+    #force of infection infection hazard
+    indx_foi_age_f <- age_lookup_f[1:(s - 1)]
+    indx_foi_age_m <- age_lookup_m[1:(s - 1)]
+    indx_foi_period <- period_lookup[(1 + age2date_foi):(r - 1 + age2date_foi)]
+
+    lam_foi[1:(s - 1)] <- exp(rep(space, s - 1) +
+            sex * (f_age_foi[indx_foi_age_f[1:(s - 1)]] +
+                   f_period_foi[indx_foi_period[1:(s - 1)]])
+            (1 - sex) * (m_age_foi[indx_foi_age_m[1:(s - 1)]] +
+                         m_period_foi[indx_foi_period[1:(s - 1)]])
+    )
+
+    #######################################
+    ### calculating the joint likelihood
+    #######################################
+
+    lik <- exp(-sum(lam_sus[e:(r - 1)])) *
+           (1 - exp(sum(lam_sus[(r:(s - 1))]))) *
+           exp(-sum(lambda_foi[1:(s - 1)]))
+
+    llik <- log(lik)
+
+    returnType(double(0))
+    if(log) return(llik) else return(exp(llik))    ## return log-likelihood
+  })
+
+nimble::registerDistributions(list(
+    dRecNegMort = list(
+        BUGSdist = 'dRecNegMort(e,r,s,dn1,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        types = c("x = double(0)",
+                  "e = double(0)",
+                  "r = double(0)",
+                  "s = double(0)",
+                  "dn1 = double(0)",
+                  "age2date_surv = double(0)",
+                  "beta0_inf = double(0)",
+                  "beta0_sus = double(0)",
+                  "period_effect_surv = double(1)",
+                  "age_effect_surv = double(1)",
+                  "sex = double(0)",
+                  "beta_sex = double(0)",
+                  "age2date_foi = double(0)",
+                  "f_age_foi = double(1)",
+                  "m_age_foi = double(1)",
+                  "age_lookup_f = double(1)",
+                  "age_lookup_m = double(1)",
+                  "period_lookup = double(1)",
+                  "f_period_foi = double(1)",
+                  "m_period_foi = double(1)",
+                  "space = double(0)",
+                  "log = double(0)"
+                  ),
+        discrete = TRUE
+    )
+))
+
+###for a user-defined distribution
+assign('dRecNegMort', dRecNegMort, envir = .GlobalEnv)
+
+
 
 #######################################################################
 ###
@@ -1236,6 +1377,8 @@ dRecPosMort <- nimble::nimbleFunction(
         dn1 = double(0), #interval of last test negative
         dn = double(0), #int tested positive
         age2date_surv = double(0),
+        age_effect_surv = double(1),
+        period_effect_surv = double(1),
         sex = double(0),
         beta_sex = double(0),
         age2date_foi = double(0),
@@ -1254,22 +1397,21 @@ dRecPosMort <- nimble::nimbleFunction(
     lam_foi <- nimNumeric(s)
     lam_sus <- nimNumeric(s)
     lam_inf <- nimNumeric(s)
+    liktemp  <- nimNumeric(dn-dn1+1)
 
     #############################################
     # preliminary hazards for the likelihood
     #############################################
 
-    n_indx_sus <- length(e:(dn - 1))
-
     #survival hazard for susceptible deer
-    lam_sus[e:(dn - 1)] <- exp(rep(beta0_sus, n_indx_sus)  + 
+    n_indx_sus <- length(e:(dn - 1))
+    lam_sus[e:(dn - 1)] <- exp(rep(beta0_sus, n_indx_sus)  +
                     age_effect_surv[e:(dn - 1)] +
                     period_effect_surv[(e + age2date_surv):(dn - 1 + age2date_surv)] +
                     rep(beta_sex * sex, n_indx_sus))
-    
+
     #survival hazard while infected
     n_indx_inf <- length(dn1:(s - 1))
-    
     lam_inf[dn1:(s - 1)] <- exp(rep(beta0_inf,n_indx_inf) +
                                 age_effect_surv[dn1:(s - 1)] +
                                 period_effect_surv[(dn1 + age2date_surv):
@@ -1289,8 +1431,8 @@ dRecPosMort <- nimble::nimbleFunction(
     #######################################
 
     for(k in dn1:dn) {
-      lik_temp[x] <- lam_foi[k] *
-               exp(-sum(lam_sus[e:(k - 1)])) *
+      liktemp[x] <- lam_foi[k] *
+               exp(-sum(lam_sus[1:(k - 1)])) *
                exp(-sum(lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[x:(r - 1)]))
     }
@@ -1339,10 +1481,10 @@ assign('dRecPosMort', dRecPosMort, envir = .GlobalEnv)
 
 #######################################################################
 ###
-###   User defined distribution for likelihood for 
+###   User defined distribution for likelihood for
 ###   infected deer that were test neg at capture,
 ###   then test positive at recap,
-###   that are interval censored
+###   that are right censored
 ###
 ###   d_fit_rec_pos_cens
 ###
@@ -1357,8 +1499,11 @@ dRecPosCens <- nimble::nimbleFunction(
         dn1 = double(0), #interval of last test negative
         dn = double(0), #int tested positive
         age2date_surv = double(0),
+        age_effect_surv = double(1),
+        period_effect_surv = double(1),
         sex = double(0),
         beta_sex = double(0),
+        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -1374,14 +1519,14 @@ dRecPosCens <- nimble::nimbleFunction(
     lam_foi <- nimNumeric(r)
     lam_sus <- nimNumeric(r)
     lam_inf <- nimNumeric(r)
+    liktemp <- 
 
     #############################################
     # preliminary hazards for the likelihood
     #############################################
 
-    n_indx_sus <- length(e:(dn - 1))
-
     #survival hazard for susceptible deer
+    n_indx_sus <- length(e:(dn - 1))
     lam_sus[e:(dn - 1)] <- exp(rep(beta0_sus, n_indx_sus)  + 
                     age_effect_surv[e:(dn - 1)] +
                     period_effect_surv[(e + age2date_surv):(dn - 1 + age2date_surv)] +
@@ -1408,14 +1553,14 @@ dRecPosCens <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    for(k in dn1:(dn - 1)) {
-      lik_temp[k] <- lam_foi[k] *
-               exp(-sum(lam_sus[e:(k-1)])) *
+    for(k in e:(dn - 1)) {
+      liktemp[k] <- lam_foi[k] *
+               exp(-sum(lam_sus[1:(k-1)])) *
                exp(-sum(lam_foi[1:(k-1)])) *
-               exp(-sum(lam_foi[k:(dn-1)]))     
+               exp(-sum(lam_inf[k:(r-1)]))
     }
 
-    lik <- exp(-sum(lam_inf[dn:(r-1)])) * sum(lik_temp[dn1:(dn-1)])
+    lik <- sum(liktemp[e:(r-1)])
     llik <- log(lik)
 
     returnType(double(0))
@@ -1424,7 +1569,7 @@ dRecPosCens <- nimble::nimbleFunction(
 
 nimble::registerDistributions(list(
     dRecPosCens = list(
-        BUGSdist = 'dRecPosCens(e,r,dn1,dn,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        BUGSdist = 'dRecPosCens(e,r,dn1,dn,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("x = double(0)",
                     "e = double(0)", 
                     "r = double(0)", 
@@ -1455,9 +1600,6 @@ nimble::registerDistributions(list(
 assign('dRecPosCens', dRecPosCens, envir = .GlobalEnv)
 
 
-
-
-
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
@@ -1478,8 +1620,11 @@ dNegCapPosMort <- nimble::nimbleFunction(
         dn1 = double(0), #last interval of test negative
         dn = double(0), #interval of test positive (could be interval of mortality)
         age2date_surv = double(0),
+        age_effect_surv = double(1),
+        period_effect_surv = double(1),
         sex = double(0),
         beta_sex = double(0),
+        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -1550,12 +1695,12 @@ dNegCapPosMort <- nimble::nimbleFunction(
 
 nimble::registerDistributions(list(
     dNegCapPosMort = list(
-        BUGSdist = 'dNegCapPosMort(e,r,s,dn1,dn,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
-        types = c("e = double(0)", 
-                    "r = double(0)", 
-                    "s = double(0)", 
-                    "dn1 = double(0)", 
-                    "dn = double(0)", 
+        BUGSdist = 'dNegCapPosMort(e,r,s,dn1,dn,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        types = c("e = double(0)",
+                    "r = double(0)",
+                    "s = double(0)",
+                    "dn1 = double(0)",
+                    "dn = double(0)",
                     "age2date_surv = double(0)",
                     "beta0_inf = double(0)",
                     "beta0_sus = double(0)",
@@ -1563,13 +1708,14 @@ nimble::registerDistributions(list(
                     "age_effect_surv = double(1)",
                     "sex = double(0)",
                     "beta_sex = double(0)",
+                    "age2date_foi = double(0)",
                     "f_age_foi = double(1)",
                     "m_age_foi = double(1)",
                     "age_lookup_f = double(1)",
                     "age_lookup_m = double(1)",
-                    "period_lookup=double(1)",
-                    "f_period_foi=double(1)",
-                    "m_period_foi=double(1)",
+                    "period_lookup = double(1)",
+                    "f_period_foi = double(1)",
+                    "m_period_foi = double(1)",
                     "space = double(0)",
                     "log = double()"
                   ),

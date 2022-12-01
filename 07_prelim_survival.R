@@ -6,12 +6,12 @@
 ###
 # min(d_fit_hunt_neg$kill_date)
 # min(d_fit_hunt_pos$kill_date)
-nT_overall <- floor(as.duration(ymd("2002-03-01") %--% ymd("2022-05-08"))/dweeks(1)) - 1
-nT_period_presurv <- floor(as.duration(ymd("2002-03-01") %--% ymd("2017-01-07"))/dweeks(1)) - 1
+# nT_overall <- floor(as.duration(ymd("2002-03-01") %--% ymd("2022-05-08"))/dweeks(1)) - 1
+# nT_period_presurv <- floor(as.duration(ymd("2002-03-01") %--% ymd("2017-01-07"))/dweeks(1)) - 1
 # floor(as.duration(ymd("2017-01-07") %--% ymd("2022-05-08"))/dweeks(1))
 
 #if we go from the first birth in 1992
-nT_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-08"))/dweeks(1)) - 1
+nT_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dweeks(1)) - 1
 nT_period_presurv <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dweeks(1)) - 1
 
 

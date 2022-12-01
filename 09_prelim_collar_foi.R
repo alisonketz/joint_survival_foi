@@ -51,3 +51,21 @@ period_lookup_col_inf <- c(rep(1,ceiling(difftime("2002-01-01","2001-05-25",unit
                         #    rep(1,tot_pre_study-round(difftime("2017-01-09","2002-01-01",units="weeks"))),
                            rep(1:20, each = 52), rep(21,22))# through the end of may 2022
 n_period_lookup_col_inf <- length(period_lookup_col_inf)
+
+
+##############################################
+###
+### To run survival period effects prior to
+###  the start of the study
+###
+##############################################
+
+
+period_effect_survival <- c(rep(-6,15),#may1992-sep1992
+                            rep(c(rep(-4.5,18),rep(-6,34)),29),#sep1992 - sep2021
+                            rep(-4.5,19),#sep2021-jan2022
+                            rep(-6,22))#jan2022-May15,2022
+length(period_effect_survival)
+nT_overall
+
+period_effect_survival[(nT_period_presurv+1):(nT_overall)] <- NA

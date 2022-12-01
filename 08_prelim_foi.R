@@ -426,3 +426,5 @@ n_period_lookup_icap <- length(period_lookup_icap)
 d_fit_hunt_neg <- cwd_df[cwd_df$teststatus == 0, ]
 d_fit_hunt_pos <- cwd_df[cwd_df$teststatus == 1, ]
 
+sect_hunt_neg <- sect[cwd_df$teststatus == 0]
+sect_hunt_pos <- sect[cwd_df$teststatus == 1]

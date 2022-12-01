@@ -195,16 +195,14 @@ obs_sample_sizes_desc <- read.csv("../obs_sample_sizes_description.csv")
 
 ###############################################################
 ###
-### d_fit_sus_cens
+### Separating hunter harvested
+### CWD test positive deer from CWD test negative
+###
+### d_fit_hunt_pos
+### d_fit_hunt_neg
 ###
 ##############################################################
 
-# d_fit_sus_cens$cwd_mort <- NA
-# d_fit_sus_cens$cwd_mort[d_fit_sus_cens$lowtag %in% d_post_cwd$lowtag] <- 0
+d_fit_hunt_neg <- cwd_df[cwd_df$teststatus == 0, ]
+d_fit_hunt_pos <- cwd_df[cwd_df$teststatus == 1, ]
 
-#for interval censored deer, some we have tests for, and some we don't
-# d_fit_sus_cens$cwd_mort
-
-#notice, that some of these are inadequate samples,
-#so there's even fewer that we have tests for
-# d_post_cwd[d_post_cwd$lowtag %in% d_fit_sus_cens$lowtag,]

@@ -151,34 +151,36 @@ sect_num <- as.numeric(as.factor(study_df$dsection))
 # for indexing sections within the car model
 sect <- rep(NA,n_sect)
 d_surv$sect <- rep(NA,nrow(d_surv))
-d_fit_sus_cens$sect <- rep(NA,nrow(d_fit_sus_cens))
-d_fit_sus_mort$sect <- rep(NA,nrow(d_fit_sus_mort))
+d_fit_sus_cens_posttest$sect <- rep(NA,nrow(d_fit_sus_cens_posttest))
+d_fit_sus_cens_postno$sect <- rep(NA,nrow(d_fit_sus_cens_postno))
+d_fit_sus_mort_posttest$sect <- rep(NA,nrow(d_fit_sus_mort_posttest))
+d_fit_sus_mort_postno$sect <- rep(NA,nrow(d_fit_sus_mort_postno))
 d_fit_icap_cens$sect <- rep(NA,nrow(d_fit_icap_cens))
 d_fit_icap_mort$sect <- rep(NA,nrow(d_fit_icap_mort))
-d_fit_idead$sect <- rep(NA,nrow(d_fit_idead))
-d_fit_rec_neg_cens$sect <- rep(NA,nrow(d_fit_rec_neg_cens))
+d_fit_rec_neg_cens_posttest$sect <- rep(NA,nrow(d_fit_rec_neg_cens_posttest))
+d_fit_rec_neg_cens_postno$sect <- rep(NA,nrow(d_fit_rec_neg_cens_postno))
 d_fit_rec_neg_mort$sect <- rep(NA,nrow(d_fit_rec_neg_mort))
 d_fit_rec_pos_cens$sect <- rep(NA,nrow(d_fit_rec_pos_cens))
 d_fit_rec_pos_mort$sect <- rep(NA,nrow(d_fit_rec_pos_mort))
+d_fit_idead$sect <- rep(NA,nrow(d_fit_idead))
 d_fit_endlive$sect <- rep(NA,nrow(d_fit_endlive))
 
 for (j in 1:n_sect) {
   sect[which(cwd_df$dsection == study_df$dsection[j])] <- sect_num[j]
-  d_surv$sect[which(d_surv$dsection == study_df$dsection[j])] <- sect_num[j]
-  d_fit_sus_cens$sect[which(d_fit_sus_cens$dsection == study_df$dsection[j])] <- sect_num[j]
-  d_fit_sus_mort$sect[which(d_fit_sus_mort$dsection == study_df$dsection[j])] <- sect_num[j]
 
+  d_surv$sect[which(d_surv$dsection == study_df$dsection[j])] <- sect_num[j]
+  d_fit_sus_cens_posttest$sect[which(d_fit_sus_cens_posttest$dsection == study_df$dsection[j])] <- sect_num[j]
+  d_fit_sus_cens_postno$sect[which(d_fit_sus_cens_postno$dsection == study_df$dsection[j])] <- sect_num[j]
+  d_fit_sus_mort_posttest$sect[which(d_fit_sus_mort_posttest$dsection == study_df$dsection[j])] <- sect_num[j]
+  d_fit_sus_mort_postno$sect[which(d_fit_sus_mort_postno$dsection == study_df$dsection[j])] <- sect_num[j]
   d_fit_icap_cens$sect[which(d_fit_icap_cens$dsection == study_df$dsection[j])] <- sect_num[j]
   d_fit_icap_mort$sect[which(d_fit_icap_mort$dsection == study_df$dsection[j])] <- sect_num[j]
-
-  d_fit_idead$sect[which(d_fit_idead$dsection == study_df$dsection[j])] <- sect_num[j]
-
-  d_fit_rec_neg_cens$sect[which(d_fit_rec_neg_cens$dsection == study_df$dsection[j])] <- sect_num[j]
+  d_fit_rec_neg_cens_posttest$sect[which(d_fit_rec_neg_cens_posttest$dsection == study_df$dsection[j])] <- sect_num[j]
+  d_fit_rec_neg_cens_postno$sect[which(d_fit_rec_neg_cens_postno$dsection == study_df$dsection[j])] <- sect_num[j]
   d_fit_rec_neg_mort$sect[which(d_fit_rec_neg_mort$dsection == study_df$dsection[j])] <- sect_num[j]
-
   d_fit_rec_pos_cens$sect[which(d_fit_rec_pos_cens$dsection == study_df$dsection[j])] <- sect_num[j]
   d_fit_rec_pos_mort$sect[which(d_fit_rec_pos_mort$dsection == study_df$dsection[j])] <- sect_num[j]
-
+  d_fit_idead$sect[which(d_fit_idead$dsection == study_df$dsection[j])] <- sect_num[j]
   d_fit_endlive$sect[which(d_fit_endlive$dsection == study_df$dsection[j])] <- sect_num[j]
 }
 
@@ -241,10 +243,10 @@ period_week_indx <- c(rep(1,51),#2017
                    rep(4,52),#2020
                    rep(5,52),#2021
                    rep(6,nT_period - length(c(rep(1,51),#2017
-                   rep(2,52),#2018
-                   rep(3,52),#2019
-                   rep(4,52),#2020
-                   rep(5,52))))#2022
+                                              rep(2,52),#2018
+                                              rep(3,52),#2019
+                                              rep(4,52),#2020
+                                              rep(5,52))))#2022
                    )
 
 period_week_indx_col <- period_week_indx + 15
@@ -405,4 +407,22 @@ n_period_lookup_icap <- length(period_lookup_icap)
 # icap_censonly_pre_sex = d_fit_icap_censonly_pre$sex
 # icap_censonly_pre_left_period = d_fit_icap_censonly_pre$left_period
 # icap_censonly_pre_birth_week_study = d_fit_icap_censonly_pre$birth_week_study
+
+
+
+
+
+
+###############################################################
+###
+### Separating hunter harvested
+### CWD test positive deer from CWD test negative
+###
+### d_fit_hunt_pos
+### d_fit_hunt_neg
+###
+##############################################################
+
+d_fit_hunt_neg <- cwd_df[cwd_df$teststatus == 0, ]
+d_fit_hunt_pos <- cwd_df[cwd_df$teststatus == 1, ]
 

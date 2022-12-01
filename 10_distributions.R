@@ -35,14 +35,13 @@ dInfHarvest <- nimble::nimbleFunction(
         ### argument type declarations
         x=double(0),
         a = double(0), #age (weeks) at harvest
-        age2date_surv = double(0),
+        age2date = double(0),
         beta0_sus = double(0),
         beta0_inf = double(0),
         period_effect_surv = double(0),
         age_effect_surv = double(0),
         sex = double(0),
         beta_sex = double(0),
-        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -68,7 +67,7 @@ dInfHarvest <- nimble::nimbleFunction(
     #############################################
     indx_foi_age_f[1:a] <- age_lookup_f[1:a]
     indx_foi_age_m[1:a] <- age_lookup_m[1:a]
-    indx_foi_period[1:a] <- period_lookup[(1 + age2date_foi):(a + age2date_foi)]
+    indx_foi_period[1:a] <- period_lookup[(1 + age2date):(a + age2date)]
 
     lam_foi[1:a] <- exp(rep(space, a) +
                         sex * (f_age_foi[indx_foi_age_f[1:a]] + 
@@ -79,13 +78,13 @@ dInfHarvest <- nimble::nimbleFunction(
 
     lam_sus[1:(a - 1)] <- exp(rep(beta0_sus, (a - 1)) +
                             age_effect_surv[1:(a - 1)] +
-                            period_effect_surv[(1 + age2date_surv):(a - 1 + age2date_surv)] +
+                            period_effect_surv[(1 + age2date):(a - 1 + age2date)] +
                             rep(beta_sex * sex, (a - 1))
                            )
 
     lam_inf[1:a] <- exp(rep(beta0_inf, a) +
                         age_effect_surv[1:a] +
-                        period_effect_surv[(1 + age2date_surv):(a + age2date_surv)] +
+                        period_effect_surv[(1 + age2date):(a + age2date)] +
                         rep(beta_sex * sex, a)
                         )
 
@@ -112,16 +111,15 @@ dInfHarvest <- nimble::nimbleFunction(
 
 nimble::registerDistributions(list(
     dInfHarvest = list(
-        BUGSdist = 'dInfHarvest(a,age2date_surv,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        BUGSdist = 'dInfHarvest(a,age2date,beta0_inf,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("a = double(0)",
-                    "age2date_surv = double(0)",
+                    "age2date = double(0)",
                     "beta0_inf = double(0)",
                     "beta0_sus = double(0)",
                     "period_effect_surv = double(1)",
                     "age_effect_surv = double(1)",
                     "sex = double(0)",
                     "beta_sex = double(0)",
-                    "age2date_foi = double(0)",
                     "f_age_foi = double(1)",
                     "m_age_foi = double(1)",
                     "age_lookup_f = double(1)",
@@ -142,14 +140,13 @@ assign('dInfHarvest', dInfHarvest, envir = .GlobalEnv)
 # dInfHarvest(
 #         x = 1,
 #         a = cwd_df$ageweeks[1], #age (weeks) at harvest
-#         age2date_surv = cwd_df$birthweek[1],
+#         age2date = cwd_df$birthweek[1],
 #         beta0_sus = beta0_sus,
 #         beta0_inf = beta0_inf,
 #         period_effect_surv = period_effect_survival,
 #         age_effect_surv = age_effect_survival,
 #         sex = cwd_df$sex[1],
 #         beta_sex = beta_sex,
-#         age2date_foi = cwd_df$birthweek[1],
 #         f_age_foi = f_age_foi,
 #         m_age_foi = m_age_foi,
 #         age_lookup_f = age_lookup_f,
@@ -176,13 +173,12 @@ dSusHarvest <- nimble::nimbleFunction(
         ### argument type declarations
         x = double(0),
         a = double(0),
-        age2date_surv = double(0),
+        age2date = double(0),
         beta0_sus = double(0),
         period_effect_surv = double(0),
         age_effect_surv = double(0),
         sex = double(0),
         beta_sex = double(0),
-        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -208,7 +204,7 @@ dSusHarvest <- nimble::nimbleFunction(
     #############################################
     indx_foi_age_f <- age_lookup_f[1:a]
     indx_foi_age_m <- age_lookup_m[1:a]
-    indx_foi_period <- period_lookup[(1 + age2date_foi):(a + age2date_foi)]
+    indx_foi_period <- period_lookup[(1 + age2date):(a + age2date)]
 
     lam_foi[1:a] <- exp(rep(space, a) +
                         sex * (f_age_foi[indx_foi_age_f[1:a]] +
@@ -217,7 +213,7 @@ dSusHarvest <- nimble::nimbleFunction(
                                      m_period_foi[indx_foi_period[1:a]])
             )
 
-    indx_sus_period <- (1 + age2date_surv):(a + age2date_surv)
+    indx_sus_period <- (1 + age2date):(a + age2date)
     lam_sus[1:a] <- exp(rep(beta0_sus, a) +
                             age_effect_surv[1:a] +
                             period_effect_surv[indx_sus_period[1:a]] +
@@ -242,15 +238,14 @@ dSusHarvest <- nimble::nimbleFunction(
 
 nimble::registerDistributions(list(
     dSusHarvest = list(
-        BUGSdist = 'dSusHarvest(a,age2date_surv,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,age2date_foi,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        BUGSdist = 'dSusHarvest(a,age2date,beta0_sus,period_effect_surv,age_effect_surv,sex,beta_sex,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("a = double(0)",
-                  "age2date_surv = double(0)",
+                  "age2date = double(0)",
                   "beta0_sus = double(0)",
                   "period_effect_surv = double(1)",
                   "age_effect_surv = double(1)",
                   "sex = double(0)",
                   "beta_sex = double(0)",
-                  "age2date_foi = double(0)",
                   "f_age_foi = double(1)",
                   "m_age_foi = double(1)",
                   "age_lookup_f = double(1)",
@@ -272,13 +267,12 @@ assign('dSusHarvest', dSusHarvest, envir = .GlobalEnv)
 # dSusHarvest(
 #         x = 1,
 #         a = cwd_df$ageweeks[1], #age (weeks) at harvest
-#         age2date_surv = cwd_df$birthweek[1],
+#         age2date = cwd_df$birthweek[1],
 #         beta0_sus = beta0_sus,
 #         period_effect_surv = period_effect_survival,
 #         age_effect_surv = age_effect_survival,
 #         sex = cwd_df$sex[1],
 #         beta_sex = beta_sex,
-#         age2date_foi = cwd_df$birthweek[1],
 #         f_age_foi = f_age_foi,
 #         m_age_foi = m_age_foi,
 #         age_lookup_f = age_lookup_f,
@@ -856,7 +850,6 @@ nimble::registerDistributions(list(
                   "age_effect_surv = double(1)",
                   "sex = double(0)",
                   "beta_sex = double(0)",
-                  "age2date_foi = double(0)",
                   "f_age_foi = double(1)",
                   "m_age_foi = double(1)",
                   "age_lookup_f = double(1)",
@@ -924,7 +917,6 @@ dIcapCens <- nimble::nimbleFunction(
         period_effect_surv = double(1),
         sex = double(0),
         beta_sex = double(0),
-        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -1000,7 +992,6 @@ nimble::registerDistributions(list(
                   "age_effect_surv = double(1)",
                   "sex = double(0)",
                   "beta_sex = double(0)",
-                  "age2date_foi = double(0)", 
                   "f_age_foi = double(1)",
                   "m_age_foi = double(1)",
                   "age_lookup_f = double(1)",
@@ -1352,7 +1343,6 @@ dRecNegCensPostNo <- nimble::nimbleFunction(
         period_effect_surv = double(1),
         sex = double(0),
         beta_sex = double(0),
-        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -1791,7 +1781,6 @@ dRecPosCens <- nimble::nimbleFunction(
         period_effect_surv = double(1),
         sex = double(0),
         beta_sex = double(0),
-        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -1939,7 +1928,6 @@ dNegCapPosMort <- nimble::nimbleFunction(
         period_effect_surv = double(1),
         sex = double(0),
         beta_sex = double(0),
-        age2date_foi = double(0),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
@@ -2023,7 +2011,6 @@ nimble::registerDistributions(list(
                     "age_effect_surv = double(1)",
                     "sex = double(0)",
                     "beta_sex = double(0)",
-                    "age2date_foi = double(0)",
                     "f_age_foi = double(1)",
                     "m_age_foi = double(1)",
                     "age_lookup_f = double(1)",

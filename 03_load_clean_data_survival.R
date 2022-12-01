@@ -65,7 +65,7 @@ d_tooth <- d_tooth[!(d_tooth$lowtag %in% low_rm),]
 
 #one of these had an age undetermined
 sum(d_age$lowtag %in% low_rm)
-d_age <- d_age[!(d_age$lowtag %in% low_rm),]
+d_age <- d_age[!(d_age$lowtag %in% low_rm), ]
 
 #########################################################
 ###
@@ -634,8 +634,7 @@ low_double_cens <- d_cens$lowtag[!is.na(d_cens$censor2lefteartag)]
 #setting the vector of censordate_use which is the censordate to use in the model
 #for those that were recaptured after initial censoring, and then recollared, use the final censor date
 d_cens$censordate_use <- d_cens$censordate
-d_cens$censordate_use[d_cens$lowtag %in% low_double_cens] <- d_cens$censor2date[d_cens$lowtag %in% low_double_cens]
-
+d_cens$censordate_use[d_cens$lowtag %in% low_double_cens] <- d_cens$censor2censordate[d_cens$lowtag %in% low_double_cens]
 
 ##########################################################################
 ###
@@ -926,8 +925,6 @@ for(i in 1:length(yrs)){
 ### for the 8 that were recaptured
 ###
 #########################################################################
-df_cap$recap_cwd
-
 
 df_cap$recap_disweek <- 0
 df_cap$recap_disagewk <- 0

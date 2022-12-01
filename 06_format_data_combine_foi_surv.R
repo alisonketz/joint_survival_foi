@@ -191,18 +191,3 @@ obs_sample_sizes_desc <- read.csv("../obs_sample_sizes_description.csv")
 
 # print(xtable(obs_sample_sizes_desc),include.rownames=FALSE)
 
-
-
-###############################################################
-###
-### Separating hunter harvested
-### CWD test positive deer from CWD test negative
-###
-### d_fit_hunt_pos
-### d_fit_hunt_neg
-###
-##############################################################
-
-d_fit_hunt_neg <- cwd_df[cwd_df$teststatus == 0, ]
-d_fit_hunt_pos <- cwd_df[cwd_df$teststatus == 1, ]
-

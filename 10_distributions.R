@@ -34,21 +34,21 @@ dInfHarvest <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
         x=double(0),
-        a = double(0), #age (weeks) at harvest
-        sex = double(0),
-        age2date = double(0),
+        a = integer(0), #age (weeks) at harvest
+        sex = integer(0),
+        age2date = integer(0),
         beta_sex = double(0),
         beta0_sus = double(0),
         beta0_inf = double(0),
-        period_effect_surv = double(0),
-        age_effect_surv = double(0),
+        age_effect_surv = double(1),
+        period_effect_surv = double(1),
         f_age_foi = double(1),
         m_age_foi = double(1),
         age_lookup_f = double(1),
         age_lookup_m = double(1),
-        period_lookup=double(1),
-        f_period_foi=double(1),
-        m_period_foi=double(1),
+        period_lookup = double(1),
+        f_period_foi = double(1),
+        m_period_foi = double(1),
         space = double(0),
         log = double(0)
         ) {
@@ -81,13 +81,25 @@ dInfHarvest <- nimble::nimbleFunction(
                             period_effect_surv[(1 + age2date):(a - 1 + age2date)] +
                             rep(beta_sex * sex, (a - 1))
                            )
-
+    # for(i in 1:(a-1)){
+    # lam_sus[i] <- exp(beta0_sus +
+    #                         age_effect_surv[i] +
+    #                         period_effect_surv[i+age2date] +
+    #                         beta_sex * sex
+    #                        )
+    # }
     lam_inf[1:a] <- exp(rep(beta0_inf, a) +
                         age_effect_surv[1:a] +
                         period_effect_surv[(1 + age2date):(a + age2date)] +
                         rep(beta_sex * sex, a)
                         )
-
+    # for(i in 1:a){
+    #     lam_inf[i] <- exp(beta0_inf +
+    #                     age_effect_surv[i] +
+    #                     period_effect_surv[(i + age2date)] +
+    #                     beta_sex * sex
+    #                     )
+    # }
     #######################################
     ### calculating the joint likelihood
     #######################################
@@ -103,60 +115,88 @@ dInfHarvest <- nimble::nimbleFunction(
                                          lam_sus[1:(a - 1)]))
     lik <- lam_inf[a] * sum(lik_temp[1:a])
     llik <- log(lik)
-
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood
   })
 
 
-nimble::registerDistributions(list(
-    dInfHarvest = list(
-        BUGSdist = 'dInfHarvest(a,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
-        types = c("a = double(0)",
-                    "sex = double(0)",
-                    "age2date = double(0)",
-                    "beta_sex = double(0)",
-                    "beta0_sus = double(0)",
-                    "beta0_inf = double(0)",
-                    "age_effect_surv = double(1)",
-                    "period_effect_surv = double(1)",
-                    "f_age_foi = double(1)",
-                    "m_age_foi = double(1)",
-                    "age_lookup_f = double(1)",
-                    "age_lookup_m = double(1)",
-                    "period_lookup=double(1)",
-                    "f_period_foi=double(1)",
-                    "m_period_foi=double(1)",
-                    "space = double(0)",
-                    "log = double(0)"
-                  ),
-        discrete = TRUE
-    )
-))
+# nimble::registerDistributions(list(
+#     dInfHarvest = list(
+#         BUGSdist = 'dInfHarvest(a,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+#         types = c("a = integer(0)",
+#                     "sex = integer(0)",
+#                     "age2date = integer(0)",
+#                     "beta_sex = double(0)",
+#                     "beta0_sus = double(0)",
+#                     "beta0_inf = double(0)",
+#                     "age_effect_surv = double(1)",
+#                     "period_effect_surv = double(1)",
+#                     "f_age_foi = double(1)",
+#                     "m_age_foi = double(1)",
+#                     "age_lookup_f = double(1)",
+#                     "age_lookup_m = double(1)",
+#                     "period_lookup = double(1)",
+#                     "f_period_foi = double(1)",
+#                     "m_period_foi = double(1)",
+#                     "space = double(0)",
+#                     "log = double(0)"
+#                   ),
+#         discrete = TRUE
+#     )
+# ))
 
 # for a user-defined distribution
 assign('dInfHarvest', dInfHarvest, envir = .GlobalEnv)
 
-# dInfHarvest(
-#         x = 1,
-#         a = cwd_df$ageweeks[1], #age (weeks) at harvest
-#         sex = cwd_df$sex[1],
-#         age2date = cwd_df$birthweek[1],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival,
-#         period_effect_surv = period_effect_survival,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_f,
-#         age_lookup_m = age_lookup_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = space_mn[1],
-#         log = TRUE
-#         )
+dInfHarvest(
+        x = 1,
+        a = d_fit_hunt_pos$ageweeks[1], #age (weeks) at harvest
+        sex = d_fit_hunt_pos$sex[1],
+        age2date = d_fit_hunt_pos$birthweek[1]-1,
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival,
+        period_effect_surv = period_effect_survival,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_f,
+        age_lookup_m = age_lookup_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = space_mn[1],
+        log = TRUE
+        )
+
+test=c()
+
+  for (i in 1:nrow(d_fit_hunt_pos)) {
+
+    test[i] <- dInfHarvest(x = 1,
+                  a = d_fit_hunt_pos$ageweeks[i], #age (weeks) at harvest
+                  sex = d_fit_hunt_pos$sex[i],
+                  age2date = d_fit_hunt_pos$birthweek[i],
+                  beta_sex = beta_sex,
+                  beta0_sus = beta0_sus,
+                  beta0_inf = beta0_inf,
+                  age_effect_surv = age_effect_survival,
+                  period_effect_surv = period_effect_survival,
+                  f_age_foi = f_age_foi,
+                  m_age_foi = m_age_foi,
+                  age_lookup_f = age_lookup_f,
+                  age_lookup_m = age_lookup_m,
+                  period_lookup = period_lookup,
+                  f_period_foi = f_period_foi,
+                  m_period_foi = m_period_foi,
+                  space = 0,
+                  log = TRUE
+                  )
+
+  }
+which(is.na(test))
+
+
 
 #######################################################################
 ###
@@ -164,6 +204,7 @@ assign('dInfHarvest', dInfHarvest, envir = .GlobalEnv)
 ###   uninfected harvest deer
 ###
 ###   d_fit_hunt_neg
+###
 ###   Overleaf Equation (5)
 ###
 #######################################################################
@@ -439,7 +480,7 @@ assign('dSusCensTest', dSusCensTest, envir = .GlobalEnv)
 ###   Test neg at cap and censoring
 ###
 ###   d_fit_sus_cens_postno
-###   d_endlive
+###   d_fit_endlive
 ###
 ###   Overleaf Equation (9)
 ###
@@ -467,7 +508,7 @@ dSusCensNo <- nimble::nimbleFunction(
         m_period_foi = double(1),
         space = double(0),
         log = double()
-        ) {
+        ) {+
 
     lik <- 0 #intialize likelihood
     llik <- 0 #intialize log-likelihood
@@ -1250,7 +1291,6 @@ dRecNegCensTest <- nimble::nimbleFunction(
            exp(-sum(lam_sus[e:(r - 1)])) *
            exp(-sum(lam_foi[1:(r - 1)]))
     llik <- log(lik)
-
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood
   })

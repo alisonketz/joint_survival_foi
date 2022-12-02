@@ -16,7 +16,8 @@
 # load("results/mcmcout.Rdata")
 # load("results/runperiod.Rdata")
 out <- mcmcout$samples
-fit_sum <- mcmcout$summary$all.chains
+fit_sum <- mcmcout$summary
+# fit_sum <- mcmcout$summary$all.chains
 
 # load("results/fit_sum.Rdata")
 # load("results/gd.Rdata")
@@ -36,16 +37,11 @@ save(es,file="results/es.Rdata")
 gd
 es
 pdf("figures/traceplots.pdf")
-traceplot(out[, "sus_beta0"], ylab = "sus_beta0")
-traceplot(out[, "sus_beta_sex"], ylab = "sus_beta_sex")
-traceplot(out[, "sus_tau_period"], ylab = "sus_tau_period")
-traceplot(out[, "sus_tau_age"], ylab = "sus_tau_age")
-
-traceplot(out[, "inf_beta0"], ylab = "inf_beta0")
-traceplot(out[, "inf_beta_sex"], ylab = "inf_beta_sex")
-traceplot(out[, "inf_tau_period"], ylab = "inf_tau_period")
-traceplot(out[, "inf_tau_age"], ylab = "icap_tau_age")
-
+traceplot(out[, "beta_sex"], ylab = "beta_sex")
+traceplot(out[, "beta0_sus"], ylab = "beta0_sus")
+traceplot(out[, "beta0_inf"], ylab = "beta0_inf")
+traceplot(out[, "tau_period"], ylab = "tau_period")
+traceplot(out[, "tau_age"], ylab = "tau_age")
 # traceplot(out[,"rho"],ylab="rho")
 # traceplot(out[,"hprec"],ylab="hprec")
 # traceplot(out[,"sprec"],ylab="sprec")
@@ -55,10 +51,10 @@ traceplot(out[,"fprec"],ylab="fprec")
 traceplot(out[,"tmprec"],ylab="tmprec")
 traceplot(out[,"tfprec"],ylab="tfprec")
 for(i in 1:n_agef){
-  traceplot(out[,paste0("f_age[",i,"]")],ylab=paste0("f_age[",i,"]"))
+  traceplot(out[,paste0("f_age_foi[",i,"]")],ylab=paste0("f_age_foi[",i,"]"))
 }
 for(i in 1:n_agem){
-  traceplot(out[,paste0("m_age[",i,"]")],ylab=paste0("m_age[",i,"]"))
+  traceplot(out[,paste0("m_age_foi[",i,"]")],ylab=paste0("m_age_foi[",i,"]"))
 }
 # for(i in 1:n_period){
 #   traceplot(out[,paste0("f_period[",i,"]")],ylab=paste0("f_period[",i,"]"))
@@ -93,14 +89,13 @@ age_effect_upper <- fit_sum[te_indx,5]
 weeks <- 1:length(age_effect_mean)
 
 out_age_effect <- data.frame(weeks,age_effect_mean,age_effect_lower,age_effect_upper)
-out_age_effect$disease = "Susceptible"
 
 age_effect_plot <- ggplot(data =out_age_effect,aes(x = weeks))+
   geom_line(aes(x = weeks,y=age_effect_mean),size=1)+
   geom_ribbon(aes(ymin=age_effect_lower,ymax=age_effect_upper),alpha=.2,linetype=0)+
   ggtitle("Age Effect Posterior")+xlab("Age (Years)")+ylab("Effect Size")+
   theme_bw()+
-  scale_x_continuous(breaks = seq(0,nT_age,by=104),labels=seq(0,18,by=2))+
+  scale_x_continuous(breaks = seq(0,nT_age_surv,by=104),labels=seq(0,18,by=2))+
   scale_color_manual("Year",values = met.brewer("Kandinsky", 2)) +
   scale_fill_manual("Year",values = met.brewer("Kandinsky", 2))
   
@@ -125,10 +120,9 @@ period_effect_mean <- fit_sum[te_indx,1]
 period_effect_lower <- fit_sum[te_indx,4]
 period_effect_upper <- fit_sum[te_indx,5]
 
-weeks <- 1:nT_period
+weeks <- 1:nT_period_surv
 
 out_period_effect <- data.frame(weeks,period_effect_mean,period_effect_lower,period_effect_upper)
-out_period_effect$disease = "Susceptible"
 
 period_effect_plot <- ggplot(data =out_period_effect,aes(x = weeks))+
   geom_line(aes(x = weeks,y=period_effect_mean),size=1)+
@@ -151,10 +145,15 @@ ggsave("figures/period_effect.png",period_effect_plot)
 ### plotting betas
 ###
 ############################
-beta_df <- do.call(rbind,out[,grep('beta',rownames(fit_sum))])
-beta0_df <- reshape2::melt(beta_df[,c(1,3)])[,2:3]
+#for multiple chains
+# beta_df <- do.call(rbind,out[,grep('beta',rownames(fit_sum))])
+#for 1 chain
+beta_df <- out[,grep('beta',rownames(fit_sum))]
+
+beta0_df <- pivot_longer(data.frame(beta_df[,1:2]),cols=c("beta0_inf","beta0_sus"))
+
 names(beta0_df) <- c("disease","value")
-levels(beta0_df$disease) <- c("Infected","Susceptible")
+# levels(beta0_df$disease) <- c("Infected","Susceptible")
 
 beta0_plot_combo <- ggplot(data =beta0_df,aes(color=disease,fill=disease))+
   geom_density(aes(x = value),size=1,alpha = .6) +  
@@ -169,12 +168,10 @@ beta0_plot_combo
 ggsave("figures/beta0_plot_combo.pdf",beta0_plot_combo,height=5,width=6)
 ggsave("figures/beta0_plot_combo.png",beta0_plot_combo,height=5,width=6)
 
-beta_sex_df <- reshape2::melt(beta_df[,c(2,4)])[,2:3]
+beta_sex_df <- pivot_longer(data.frame(beta_df[,3]),cols=c("var1"))
 names(beta_sex_df) <- c("disease","value")
-levels(beta_sex_df$disease) <- c("Infected","Susceptible")
-beta_sex_df$disease <- factor(beta_sex_df$disease,labels=c("Susceptible","Infected"))
 
-beta_sex_plot_combo <- ggplot(data =beta_sex_df,aes(color=disease,fill=disease))+
+beta_sex_plot_combo <- ggplot(data =beta_sex_df)+
   geom_density(aes(x = value),size=1,alpha=.6) +  
   ggtitle("Sex Effect (beta_sex) Posterior") +
   xlab(paste0(expression(beta),"_sex")) +

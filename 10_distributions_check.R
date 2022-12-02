@@ -59,6 +59,3 @@ f_period_foi <- c(fit_sum_foi[grep("f_time",rownames(fit_sum_foi)),1])
 m_period_foi <- c(fit_sum_foi[grep("m_time",rownames(fit_sum_foi)),1])
 space_mn <- rep(0,n_sect) #leave 0 for now
 # space_mn  <- c(fit_sum_foi[grep("space",rownames(fit_sum_foi)),1])[sect_num]
-
-
-

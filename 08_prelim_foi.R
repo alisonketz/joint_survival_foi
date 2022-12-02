@@ -409,10 +409,6 @@ n_period_lookup_icap <- length(period_lookup_icap)
 # icap_censonly_pre_birth_week_study = d_fit_icap_censonly_pre$birth_week_study
 
 
-
-
-
-
 ###############################################################
 ###
 ### Separating hunter harvested

@@ -206,3 +206,36 @@ d_surv$right_age_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_su
   d_surv$right_age_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0)] + 1
 d_surv$right_period_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0)] <- 
   d_surv$right_period_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0)] + 1
+
+fix_fast_mortalities_indx <- d_surv$right_age_r == 0
+d_surv$right_period_r[fix_fast_mortalities_indx] <- d_surv$left_period_e[fix_fast_mortalities_indx]
+d_surv$right_age_r[fix_fast_mortalities_indx] <- 1
+
+
+
+##################################################
+###
+### removing the recapture info for the deer 
+### that were recaptured after right censoring 
+###
+### 6817 6876 5153
+###
+##################################################
+
+censor_fix_low <- c(6817,6876,5153)
+d_surv[d_surv$lowtag==6817,]
+d_surv[d_surv$lowtag==6876,]
+d_surv[d_surv$lowtag==5153,]
+
+#these should have the recap ageweek and period week set to 0,
+d_surv$ageweek_recap[d_surv$lowtag %in% censor_fix_low] <- 0
+d_surv$periodweek_recap[d_surv$lowtag %in% censor_fix_low] <- 0
+d_surv$cwd_mort[d_surv$lowtag %in% censor_fix_low] <- 0
+
+#removing these from recaptured deer
+#just using the status at recapture as same as status at right censor
+rm_censor_fix <- which(low_recap %in% censor_fix_low)
+low_recap <- low_recap[-rm_censor_fix]
+
+rm_censor_fix_neg <- which(low_recap_neg %in% censor_fix_low)
+low_recap_neg <- low_recap_neg[-rm_censor_fix_neg]

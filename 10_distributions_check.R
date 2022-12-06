@@ -41,13 +41,13 @@ beta0_inf <- -3.2
 # floor(as.duration(ymd("2004-01-01") %--% ymd("2003-09-01"))/dweeks(1)) - 1
 # floor(as.duration(ymd("2022-01-01") %--% ymd("2022-05-31"))/dweeks(1)) - 1
 
-period_effect_survival <- c(rep(-6,15),#may1992-sep1992
+period_effect_survival_test <- c(rep(-6,15),#may1992-sep1992
                             rep(c(rep(-4.5,18),rep(-6,34)),29),#sep1992 - sep2021
                             rep(-4.5,19),#sep2021-jan2022
                             rep(-6,20))#jan2022-May15,2022
 
-age_effect_survival  <- exp(-.01*seq(1:962))
-age_effect_survival <- age_effect_survival - mean(age_effect_survival)
+age_effect_survival_test  <- exp(-.01*seq(1:962))
+age_effect_survival_test <- age_effect_survival_test - mean(age_effect_survival_test)
 beta_sex <- -.5
 
 #load FOI parameters based on run w/o survival integrated

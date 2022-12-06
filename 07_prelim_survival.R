@@ -43,6 +43,7 @@ endlive_age2date <- d_fit_endlive$left_period_e - d_fit_endlive$left_age_e + nT_
 nT_age_surv <- max(d_surv$right_age_s, na.rm = TRUE) - 1
 # nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE) - 1
 # nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE)
+
 nT_period_surv <- nT_overall - nT_period_presurv + 1
 
 

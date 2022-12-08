@@ -239,3 +239,19 @@ low_recap <- low_recap[-rm_censor_fix]
 
 rm_censor_fix_neg <- which(low_recap_neg %in% censor_fix_low)
 low_recap_neg <- low_recap_neg[-rm_censor_fix_neg]
+
+
+##################################################
+###
+### removing the deer that were VERY fast
+### right censors. i.e., lost collars within 
+### first week after capture 
+###
+### 5052 6400 6081 5257 7113 7787
+###
+##################################################
+
+low_remove_fast_cens <- c(5052, 6400, 6081, 5257, 7113, 7787)
+
+d_surv <- d_surv[!(d_surv$lowtag %in% low_remove_fast_cens),]
+n_surv <- nrow(d_surv)

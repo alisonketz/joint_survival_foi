@@ -33,7 +33,7 @@
 dInfHarvest <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
-        x=double(0),
+        x = integer(0),
         a = integer(0), #age (weeks) at harvest
         sex = integer(0),
         age2date = integer(0),
@@ -1873,7 +1873,6 @@ assign('dRecNegMort', dRecNegMort, envir = .GlobalEnv)
 ###
 #######################################################################
 
-
 dRecPosMort <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
@@ -1901,11 +1900,12 @@ dRecPosMort <- nimble::nimbleFunction(
         log = double()
         ) {
 
+    lik <- 0 #intialize log-likelihood
     llik <- 0 #intialize log-likelihood
-    lam_foi <- nimNumeric(s)
-    lam_sus <- nimNumeric(s)
-    lam_inf <- nimNumeric(s)
-    liktemp  <- nimNumeric(dn-dn1+1)
+    lam_foi <- nimNumeric(s - 1)
+    lam_sus <- nimNumeric(s - 1)
+    lam_inf <- nimNumeric(s - 1)
+    liktemp  <- nimNumeric(s - 1)
 
     #############################################
     # preliminary hazards for the likelihood
@@ -1929,22 +1929,27 @@ dRecPosMort <- nimble::nimbleFunction(
     #force of infection infection hazard
     lam_foi[1:(dn - 1)] <- exp(rep(space,(dn - 1)) +
                   sex * (f_age_foi[age_lookup_f[1:(dn - 1)]] +
-                            f_period_foi[period_lookup[(1 + age2date):((dn - 1) + age2date)]]) +
+                            f_period_foi[period_lookup[(1 + age2date):((dn - 1) + age2date)]])
+                             +
                   (1 - sex) * (m_age_foi[age_lookup_m[1:(dn - 1)]] +
                                   m_period_foi[period_lookup[(1 + age2date):((dn - 1) + age2date)]])
                   )
     #######################################
     ### calculating the joint likelihood
     #######################################
+      liktemp[(dn1 + 1)] <- lam_foi[(dn1 + 1)] *
+               exp(-sum(lam_foi[1:dn1])) *
+               exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
 
-    for(k in dn1:(dn-1)) {
+    for(k in (dn1+2):(dn-1)) {
       liktemp[k] <- lam_foi[k] *
-               exp(-sum(lam_sus[1:(k - 1)])) *
+               exp(-sum(lam_sus[e:(k - 1)])) *
                exp(-sum(lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[k:(r - 1)]))
     }
 
-    lik <- (1 - exp(-sum(lam_inf[r:(s - 1)]))) * sum(liktemp[dn1:(dn - 1)])
+    lik <- (1 - exp(-sum(lam_inf[r:(s - 1)]))) *
+            sum(liktemp[dn1:(dn - 1)])
     llik <- log(lik)
 
     returnType(double(0))
@@ -1983,60 +1988,60 @@ nimble::registerDistributions(list(
 ###Global Declaration so Nimble can access
 assign('dRecPosMort', dRecPosMort, envir = .GlobalEnv)
 
-# i=1
-# dRecPosMort(
-#         x = 1,
-#         e = d_fit_rec_pos_mort$left_age_e[i],
-#         r = d_fit_rec_pos_mort$right_age_r[i],
-#         s = d_fit_rec_pos_mort$right_age_s[i],
-#         dn1 = d_fit_rec_pos_mort$left_age_e[i],
-#         dn = d_fit_rec_pos_mort$ageweek_recap[i],
-#         sex = d_fit_rec_pos_mort$sex[i],
-#         age2date = rec_pos_mort_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         )
+i=2
+dRecPosMort(
+        x = 1,
+        e = d_fit_rec_pos_mort$left_age_e[i],
+        r = d_fit_rec_pos_mort$right_age_r[i],
+        s = d_fit_rec_pos_mort$right_age_s[i],
+        dn1 = d_fit_rec_pos_mort$left_age_e[i],
+        dn = d_fit_rec_pos_mort$ageweek_recap[i],
+        sex = d_fit_rec_pos_mort$sex[i],
+        age2date = rec_pos_mort_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = 0,
+        log = TRUE
+        )
 
-# test <- c()
-# for(i in 1:nrow(d_fit_rec_pos_mort)){
-# test[i] <- dRecPosMort(
-#         x = 1,
-#         e = d_fit_rec_pos_mort$left_age_e[i],
-#         r = d_fit_rec_pos_mort$right_age_r[i],
-#         s = d_fit_rec_pos_mort$right_age_s[i],
-#         dn1 = d_fit_rec_pos_mort$left_age_e[i],
-#         dn = d_fit_rec_pos_mort$ageweek_recap[i],
-#         sex = d_fit_rec_pos_mort$sex[i],
-#         age2date = rec_pos_mort_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         )
-#  }
-# test
+test <- c()
+for(i in 1:nrow(d_fit_rec_pos_mort)){
+test[i] <- dRecPosMort(
+        x = 1,
+        e = d_fit_rec_pos_mort$left_age_e[i],
+        r = d_fit_rec_pos_mort$right_age_r[i],
+        s = d_fit_rec_pos_mort$right_age_s[i],
+        dn1 = d_fit_rec_pos_mort$left_age_e[i],
+        dn = d_fit_rec_pos_mort$ageweek_recap[i],
+        sex = d_fit_rec_pos_mort$sex[i],
+        age2date = rec_pos_mort_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = 0,
+        log = TRUE
+        )
+ }
+test
 
 #######################################################################
 ###
@@ -2050,7 +2055,6 @@ assign('dRecPosMort', dRecPosMort, envir = .GlobalEnv)
 ###   Overleaf Equation (27)
 ###
 #######################################################################
-
 dRecPosCens <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
@@ -2115,16 +2119,21 @@ dRecPosCens <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    for(k in e:(dn - 1)) {
+    liktemp[(dn1 + 1)] <- lam_foi[(dn1 + 1)] *
+                    exp(-sum(lam_foi[1:dn1])) *
+                    exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
+
+    for(k in (dn1 + 2):dn) {
       liktemp[k] <- lam_foi[k] *
-               exp(-sum(lam_sus[1:(k-1)])) *
-               exp(-sum(lam_foi[1:(k-1)])) *
-               exp(-sum(lam_inf[k:(r-1)]))
+                    exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
+                    exp(-sum(lam_foi[1:(k-1)])) *
+                    exp(-sum(lam_inf[k:(r-1)]))
     }
 
-    lik <- sum(liktemp[e:(r-1)])
+    lik <- exp(-sum(lam_sus[e:(dn - 1)])) *
+           exp(-sum(lam_foi[(1:(dn - 1))])) *
+           sum(liktemp[(dn1 + 1):dn])
     llik <- log(lik)
-
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood
   })

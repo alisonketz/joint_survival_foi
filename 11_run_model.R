@@ -122,7 +122,7 @@ modelcode <- nimbleCode({
   ## setting up period effects across full study timeline
   ############################################################
 
-  period_effect_survival[(nT_period_presurv + 1):nT_overall_period] <- period_effect_surv[1:(nT_period_surv-1)]
+  period_effect_survival[(nT_period_presurv + 1):nT_overall] <- period_effect_surv[1:nT_period_surv]
 
   #######################################################################
   #######################################################################
@@ -140,27 +140,26 @@ modelcode <- nimbleCode({
   ###
   #######################################################################
 
-  # for (i in 1:nInfHarvest) {
-
-  #   y_hunt_pos[i] ~ dInfHarvest(
-  #                 a = hunt_pos_ageweeks[i], #age (weeks) at harvest
-  #                 sex = hunt_pos_sex[i],
-  #                 age2date = hunt_pos_age2date[i],
-  #                 beta_sex = beta_sex,
-  #                 beta0_sus = beta0_sus,
-  #                 beta0_inf = beta0_inf,
-  #                 age_effect_surv = age_effect_survival[1:nT_age_surv],
-  #                 period_effect_surv = period_effect_survival[1:nT_overall_period],
-  #                 f_age_foi = f_age_foi[1:n_agef],
-  #                 m_age_foi = m_age_foi[1:n_agem],
-  #                 age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-  #                 age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-  #                 period_lookup = period_lookup[1:nT_overall_period],
-  #                 f_period_foi = f_period_foi[1:n_period],
-  #                 m_period_foi = m_period_foi[1:n_period],
-  #                 space = space[sect_hunt_pos[i]]
-  #                 )
-  # }
+  for (i in 1:nInfHarvest) {
+    y_hunt_pos[i] ~ dInfHarvest(
+                  a = hunt_pos_ageweeks[i], #age (weeks) at harvest
+                  sex = hunt_pos_sex[i],
+                  age2date = hunt_pos_age2date[i],
+                  beta_sex = beta_sex,
+                  beta0_sus = beta0_sus,
+                  beta0_inf = beta0_inf,
+                  age_effect_surv = age_effect_survival[1:nT_age_surv],
+                  period_effect_surv = period_effect_survival[1:nT_overall],
+                  f_age_foi = f_age_foi[1:n_agef],
+                  m_age_foi = m_age_foi[1:n_agem],
+                  age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+                  age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+                  period_lookup = period_lookup[1:n_period_lookup],
+                  f_period_foi = f_period_foi[1:n_period],
+                  m_period_foi = m_period_foi[1:n_period],
+                  space = space[sect_hunt_pos[i]]
+                  )
+  }
 
 #######################################################################
 ###
@@ -171,25 +170,25 @@ modelcode <- nimbleCode({
 ###
 #######################################################################
 
-# for (i in 1:nSusHarvest) {
-#     y_hunt_neg[i] ~  dSusHarvest(
-#         a = hunt_neg_ageweeks[i],
-#         sex = hunt_neg_sex[i],
-#         age2date = hunt_neg_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_hunt_neg[i]]
-#         )
-# }
+for (i in 1:nSusHarvest) {
+    y_hunt_neg[i] ~  dSusHarvest(
+        a = hunt_neg_ageweeks[i],
+        sex = hunt_neg_sex[i],
+        age2date = hunt_neg_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_hunt_neg[i]]
+        )
+}
 
 #######################################################################
 ###
@@ -203,26 +202,26 @@ modelcode <- nimbleCode({
 #######################################################################
 
 
-# for (i in 1:nSusCensTest) {
-#     y_sus_cens_posttest[i] ~ dSusCensTest(
-#         e = sus_cens_posttest_left_age_e[i],
-#         r = sus_cens_posttest_right_age_r[i],
-#         sex = sus_cens_posttest_sex[i],
-#         age2date = sus_cens_posttest_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_cens_posttest[i]]
-#         )
-#   }
+for (i in 1:nSusCensTest) {
+    y_sus_cens_posttest[i] ~ dSusCensTest(
+        e = sus_cens_posttest_left_age_e[i],
+        r = sus_cens_posttest_right_age_r[i],
+        sex = sus_cens_posttest_sex[i],
+        age2date = sus_cens_posttest_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_cens_posttest[i]]
+        )
+  }
 
 
 #######################################################################
@@ -238,30 +237,27 @@ modelcode <- nimbleCode({
 ###
 #######################################################################
 
-###this one is not working
-
-
-# for (i in 1:nSusCensNo) {
-#     y_sus_cens_postno[i] ~ dSusCensNo(
-#         e = sus_cens_postno_left_age_e[i],
-#         r = sus_cens_postno_right_age_r[i],
-#         sex = sus_cens_postno_sex[i],
-#         age2date = sus_cens_postno_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_cens_postno[i]]
-#         )
-#   }
+for (i in 1:nSusCensNo) {
+    y_sus_cens_postno[i] ~ dSusCensNo(
+        e = sus_cens_postno_left_age_e[i],
+        r = sus_cens_postno_right_age_r[i],
+        sex = sus_cens_postno_sex[i],
+        age2date = sus_cens_postno_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_cens_postno[i]]
+        )
+  }
 
 #######################################################################
 ###
@@ -275,27 +271,27 @@ modelcode <- nimbleCode({
 ###
 #######################################################################
 
-# for (i in 1:nSusMortTest) {
-#     y_sus_mort_posttest[i] ~ dSusMortTest(
-#         e = sus_mort_posttest_left_age_e[i],
-#         r = sus_mort_posttest_right_age_r[i],
-#         s = sus_mort_posttest_right_age_s[i],
-#         sex = sus_mort_posttest_sex[i],
-#         age2date = sus_mort_posttest_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_mort_posttest[i]]
-#         )
-#   }
+for (i in 1:nSusMortTest) {
+    y_sus_mort_posttest[i] ~ dSusMortTest(
+        e = sus_mort_posttest_left_age_e[i],
+        r = sus_mort_posttest_right_age_r[i],
+        s = sus_mort_posttest_right_age_s[i],
+        sex = sus_mort_posttest_sex[i],
+        age2date = sus_mort_posttest_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_mort_posttest[i]]
+        )
+  }
 
 #######################################################################
 ###
@@ -310,29 +306,29 @@ modelcode <- nimbleCode({
 #######################################################################
 
 
-# for (i in 1:nSusMortNoTest) {
-#     y_sus_mort_postno[i] ~ dSusMortNoTest(
-#         e = sus_mort_postno_left_age_e[i],
-#         r = sus_mort_postno_right_age_r[i],
-#         s = sus_mort_postno_right_age_s[i],
-#         dn1 = sus_mort_postno_dn1[i],
-#         sex = sus_mort_postno_sex[i],
-#         age2date = sus_mort_postno_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_sus_mort_postno[i]]
-#         )
-#   }
+for (i in 1:nSusMortNoTest) {
+    y_sus_mort_postno[i] ~ dSusMortNoTest(
+        e = sus_mort_postno_left_age_e[i],
+        r = sus_mort_postno_right_age_r[i],
+        s = sus_mort_postno_right_age_s[i],
+        dn1 = sus_mort_postno_dn1[i],
+        sex = sus_mort_postno_sex[i],
+        age2date = sus_mort_postno_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_sus_mort_postno[i]]
+        )
+  }
 
 #######################################################################
 ###
@@ -345,27 +341,28 @@ modelcode <- nimbleCode({
 ###   Overleaf Equation (15)
 ###
 #######################################################################
-# for (i in 1:nIcapCens) {
-#     y_icap_cens[i] ~ dIcapCens(
-#         e = icap_cens_left_age_e[i],
-#         r = icap_cens_right_age_r[i],
-#         sex = icap_cens_sex[i],
-#         age2date = icap_cens_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_icap_cens[i]]
-#         )
-#   }
+
+for (i in 1:nIcapCens) {
+    y_icap_cens[i] ~ dIcapCens(
+        e = icap_cens_left_age_e[i],
+        r = icap_cens_right_age_r[i],
+        sex = icap_cens_sex[i],
+        age2date = icap_cens_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_icap_cens[i]]
+        )
+  }
 
 #######################################################################
 ###
@@ -379,28 +376,28 @@ modelcode <- nimbleCode({
 ###
 #######################################################################
 
-# for (i in 1:nIcapMort) {
-#     y_icap_mort[i] ~ dIcapMort(
-#         e = icap_mort_left_age_e[i],
-#         r = icap_mort_right_age_r[i],
-#         s = icap_mort_right_age_s[i],
-#         sex = icap_mort_sex[i],
-#         age2date = icap_mort_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_icap_mort[i]]
-#         )
-#   }
+for (i in 1:nIcapMort) {
+    y_icap_mort[i] ~ dIcapMort(
+        e = icap_mort_left_age_e[i],
+        r = icap_mort_right_age_r[i],
+        s = icap_mort_right_age_s[i],
+        sex = icap_mort_sex[i],
+        age2date = icap_mort_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_icap_mort[i]]
+        )
+  }
 
 #######################################################################
 ###
@@ -416,28 +413,28 @@ modelcode <- nimbleCode({
 #######################################################################
 
 
-# for (i in 1:nRecNegCensTest) {
-#     y_rec_neg_cens_posttest[i] ~ dRecNegCensTest(
-#         e = rec_neg_cens_posttest_left_age_e[i],
-#         r = rec_neg_cens_posttest_right_age_r[i],
-#         dn1 = rec_neg_cens_posttest_dn1[i],
-#         sex = rec_neg_cens_posttest_sex[i],
-#         age2date = rec_neg_cens_posttest_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_rec_neg_cens_posttest[i]]
-#         )
-#   }
+for (i in 1:nRecNegCensTest) {
+    y_rec_neg_cens_posttest[i] ~ dRecNegCensTest(
+        e = rec_neg_cens_posttest_left_age_e[i],
+        r = rec_neg_cens_posttest_right_age_r[i],
+        dn1 = rec_neg_cens_posttest_dn1[i],
+        sex = rec_neg_cens_posttest_sex[i],
+        age2date = rec_neg_cens_posttest_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_rec_neg_cens_posttest[i]]
+        )
+  }
 
 
 #######################################################################
@@ -455,27 +452,27 @@ modelcode <- nimbleCode({
 #######################################################################
 
 
-# for (i in 1:nRecNegMort) {
-#     y_rec_neg_mort[i] ~ dRecNegMort(
-#         e = rec_neg_mort_left_age_e[i],
-#         r = rec_neg_mort_right_age_r[i],
-#         s = rec_neg_mort_right_age_s[i],
-#         sex = rec_neg_mort_sex[i],
-#         age2date = rec_neg_mort_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_rec_neg_mort[i]]
-#         )
-#   }
+for (i in 1:nRecNegMort) {
+    y_rec_neg_mort[i] ~ dRecNegMort(
+        e = rec_neg_mort_left_age_e[i],
+        r = rec_neg_mort_right_age_r[i],
+        s = rec_neg_mort_right_age_s[i],
+        sex = rec_neg_mort_sex[i],
+        age2date = rec_neg_mort_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_rec_neg_mort[i]]
+        )
+  }
 
 #######################################################################
 ###
@@ -503,12 +500,12 @@ for (i in 1:nRecPosMort) {
         beta0_sus = beta0_sus,
         beta0_inf = beta0_inf,
         age_effect_surv = age_effect_survival[1:nT_age_surv],
-        period_effect_surv = period_effect_survival[1:nT_overall_period],
+        period_effect_surv = period_effect_survival[1:nT_overall],
         f_age_foi = f_age_foi[1:n_agef],
         m_age_foi = m_age_foi[1:n_agem],
         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-        period_lookup = period_lookup[1:nT_overall_period],
+        period_lookup = period_lookup[1:n_period_lookup],
         f_period_foi = f_period_foi[1:n_period],
         m_period_foi = m_period_foi[1:n_period],
         space = space[sect_rec_pos_mort[i]]
@@ -528,27 +525,27 @@ for (i in 1:nRecPosMort) {
 ###
 #######################################################################
 
-  # y_rec_pos_cens ~ dRecPosCens(
-  #     e = rec_pos_cens_left_age_e,
-  #     r = rec_pos_cens_right_age_r,
-  #     dn1 = rec_pos_cens_dn1,
-  #     dn = rec_pos_cens_dn,
-  #     sex = rec_pos_cens_sex,
-  #     age2date = rec_pos_cens_age2date,
-  #     beta_sex = beta_sex,
-  #     beta0_sus = beta0_sus,
-  #     beta0_inf = beta0_inf,
-  #     age_effect_surv = age_effect_survival[1:nT_age_surv],
-  #     period_effect_surv = period_effect_survival[1:nT_overall_period],
-  #     f_age_foi = f_age_foi[1:n_agef],
-  #     m_age_foi = m_age_foi[1:n_agem],
-  #     age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-  #     age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-  #     period_lookup = period_lookup[1:nT_overall_period],
-  #     f_period_foi = f_period_foi[1:n_period],
-  #     m_period_foi = m_period_foi[1:n_period],
-  #     space = space[sect_rec_pos_cens]
-  # )
+  y_rec_pos_cens ~ dRecPosCens(
+      e = rec_pos_cens_left_age_e,
+      r = rec_pos_cens_right_age_r,
+      dn1 = rec_pos_cens_dn1,
+      dn = rec_pos_cens_dn,
+      sex = rec_pos_cens_sex,
+      age2date = rec_pos_cens_age2date,
+      beta_sex = beta_sex,
+      beta0_sus = beta0_sus,
+      beta0_inf = beta0_inf,
+      age_effect_surv = age_effect_survival[1:nT_age_surv],
+      period_effect_surv = period_effect_survival[1:nT_overall],
+      f_age_foi = f_age_foi[1:n_agef],
+      m_age_foi = m_age_foi[1:n_agem],
+      age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+      age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+      period_lookup = period_lookup[1:n_period_lookup],
+      f_period_foi = f_period_foi[1:n_period],
+      m_period_foi = m_period_foi[1:n_period],
+      space = space[sect_rec_pos_cens]
+  )
 
 #######################################################################
 ###
@@ -563,30 +560,30 @@ for (i in 1:nRecPosMort) {
 #######################################################################
 
 
-# for (i in 1:nNegCapPosMort) {
-#     y_idead[i] ~ dNegCapPosMort(
-#         e = idead_left_age_e[i],
-#         r = idead_right_age_r[i],
-#         s = idead_right_age_s[i],
-#         dn1 = idead_dn1[i],
-#         dn = idead_dn[i],
-#         sex = idead_sex[i],
-#         age2date = idead_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall_period],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:nT_overall_period],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_idead[i]]
-#         )
-#   }
+for (i in 1:nNegCapPosMort) {
+    y_idead[i] ~ dNegCapPosMort(
+        e = idead_left_age_e[i],
+        r = idead_right_age_r[i],
+        s = idead_right_age_s[i],
+        dn1 = idead_dn1[i],
+        dn = idead_dn[i],
+        sex = idead_sex[i],
+        age2date = idead_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_idead[i]]
+        )
+  }
 
 })#end model statement
 
@@ -602,84 +599,84 @@ nimData <- list(Z_period = Z_period,
                 age_lookup_f = age_lookup_f,
                 age_lookup_m = age_lookup_m,
                 period_effect_survival = period_effect_survival,
-                # y_hunt_pos = rep(1, nrow(d_fit_hunt_pos)),
-                # hunt_pos_ageweeks = d_fit_hunt_pos$ageweeks,
-                # hunt_pos_sex = d_fit_hunt_pos$sex,
-                # hunt_pos_age2date = d_fit_hunt_pos$birthweek - 1,
-                # y_hunt_neg = rep(1, nrow(d_fit_hunt_neg)),
-                # hunt_neg_ageweeks = d_fit_hunt_neg$ageweeks,
-                # hunt_neg_sex = d_fit_hunt_neg$sex,
-                # hunt_neg_age2date = d_fit_hunt_neg$birthweek - 1,
-                # y_sus_cens_posttest = rep(1, nrow(d_fit_sus_cens_posttest)),
-                # sus_cens_posttest_left_age_e = d_fit_sus_cens_posttest$left_age_e,
-                # sus_cens_posttest_right_age_r = d_fit_sus_cens_posttest$right_age_r,
-                # sus_cens_posttest_sex = d_fit_sus_cens_posttest$sex,
-                # sus_cens_posttest_age2date = sus_cens_posttest_age2date,
-                # y_sus_cens_postno = rep(1, nrow(d_fit_sus_cens_postno) + nrow(d_fit_endlive)),
-                # sus_cens_postno_left_age_e = c(d_fit_sus_cens_postno$left_age_e, d_fit_endlive$left_age_e),
-                # sus_cens_postno_right_age_r = c(d_fit_sus_cens_postno$right_age_r, d_fit_endlive$right_age_r),
-                # sus_cens_postno_sex = c(d_fit_sus_cens_postno$sex, d_fit_endlive$sex),
-                # sus_cens_postno_age2date = c(sus_cens_postno_age2date, endlive_age2date)#,
-                # y_sus_mort_posttest = rep(1, nrow(d_fit_sus_mort_posttest)),
-                # sus_mort_posttest_left_age_e = d_fit_sus_mort_posttest$left_age_e,
-                # sus_mort_posttest_right_age_r = d_fit_sus_mort_posttest$right_age_r,
-                # sus_mort_posttest_right_age_s = d_fit_sus_mort_posttest$right_age_s,
-                # sus_mort_posttest_dn1 = d_fit_sus_mort_posttest$left_age_e,
-                # sus_mort_posttest_sex = d_fit_sus_mort_posttest$sex,
-                # sus_mort_posttest_age2date = sus_mort_posttest_age2date,
-                # y_sus_mort_postno = rep(1, nrow(d_fit_sus_mort_postno)),
-                # sus_mort_postno_left_age_e = d_fit_sus_mort_postno$left_age_e,
-                # sus_mort_postno_right_age_r = d_fit_sus_mort_postno$right_age_r,
-                # sus_mort_postno_right_age_s = d_fit_sus_mort_postno$right_age_s,
-                # sus_mort_postno_dn1 = d_fit_sus_mort_postno$left_age_e,
-                # sus_mort_postno_sex = d_fit_sus_mort_postno$sex,
-                # sus_mort_postno_age2date = sus_mort_postno_age2date,
-                # y_icap_cens = rep(1, nrow(d_fit_icap_cens)),
-                # icap_cens_left_age_e = d_fit_icap_cens$left_age_e,
-                # icap_cens_right_age_r = d_fit_icap_cens$right_age_r,
-                # icap_cens_sex = d_fit_icap_cens$sex,
-                # icap_cens_age2date = icap_cens_age2date,
-                # y_icap_mort = rep(1, nrow(d_fit_icap_mort)),
-                # icap_mort_left_age_e = d_fit_icap_mort$left_age_e,
-                # icap_mort_right_age_r = d_fit_icap_mort$right_age_r,
-                # icap_mort_right_age_s = d_fit_icap_mort$right_age_s,
-                # icap_mort_sex = d_fit_icap_mort$sex,
-                # icap_mort_age2date = icap_mort_age2date,
-                # y_rec_neg_cens_posttest = rep(1, nrow(d_fit_rec_neg_cens_posttest)),
-                # rec_neg_cens_posttest_left_age_e = d_fit_rec_neg_cens_posttest$left_age_e,
-                # rec_neg_cens_posttest_right_age_r = d_fit_rec_neg_cens_posttest$right_age_r,
-                # rec_neg_cens_posttest_dn1 = d_fit_rec_neg_cens_posttest$ageweek_recap,
-                # rec_neg_cens_posttest_sex = d_fit_rec_neg_cens_posttest$sex,
-                # rec_neg_cens_posttest_age2date = rec_neg_cens_posttest_age2date,
-                # y_rec_neg_mort = rep(1, nrow(d_fit_rec_neg_mort)),
-                # rec_neg_mort_left_age_e = d_fit_rec_neg_mort$left_age_e,
-                # rec_neg_mort_right_age_r = d_fit_rec_neg_mort$right_age_r,
-                # rec_neg_mort_right_age_s = d_fit_rec_neg_mort$right_age_s,
-                # rec_neg_mort_sex = d_fit_rec_neg_mort$sex,
-                # rec_neg_mort_age2date = rec_neg_mort_age2date,
+                y_hunt_pos = rep(1, nrow(d_fit_hunt_pos)),
+                hunt_pos_ageweeks = d_fit_hunt_pos$ageweeks,
+                hunt_pos_sex = d_fit_hunt_pos$sex,
+                hunt_pos_age2date = d_fit_hunt_pos$birthweek - 1,
+                y_hunt_neg = rep(1, nrow(d_fit_hunt_neg)),
+                hunt_neg_ageweeks = d_fit_hunt_neg$ageweeks,
+                hunt_neg_sex = d_fit_hunt_neg$sex,
+                hunt_neg_age2date = d_fit_hunt_neg$birthweek - 1,
+                y_sus_cens_posttest = rep(1, nrow(d_fit_sus_cens_posttest)),
+                sus_cens_posttest_left_age_e = d_fit_sus_cens_posttest$left_age_e,
+                sus_cens_posttest_right_age_r = d_fit_sus_cens_posttest$right_age_r,
+                sus_cens_posttest_sex = d_fit_sus_cens_posttest$sex,
+                sus_cens_posttest_age2date = sus_cens_posttest_age2date,
+                y_sus_cens_postno = rep(1, nrow(d_fit_sus_cens_postno) + nrow(d_fit_endlive)),
+                sus_cens_postno_left_age_e = c(d_fit_sus_cens_postno$left_age_e, d_fit_endlive$left_age_e),
+                sus_cens_postno_right_age_r = c(d_fit_sus_cens_postno$right_age_r, d_fit_endlive$right_age_r),
+                sus_cens_postno_sex = c(d_fit_sus_cens_postno$sex, d_fit_endlive$sex),
+                sus_cens_postno_age2date = c(sus_cens_postno_age2date, endlive_age2date),
+                y_sus_mort_posttest = rep(1, nrow(d_fit_sus_mort_posttest)),
+                sus_mort_posttest_left_age_e = d_fit_sus_mort_posttest$left_age_e,
+                sus_mort_posttest_right_age_r = d_fit_sus_mort_posttest$right_age_r,
+                sus_mort_posttest_right_age_s = d_fit_sus_mort_posttest$right_age_s,
+                sus_mort_posttest_dn1 = d_fit_sus_mort_posttest$left_age_e,
+                sus_mort_posttest_sex = d_fit_sus_mort_posttest$sex,
+                sus_mort_posttest_age2date = sus_mort_posttest_age2date,
+                y_sus_mort_postno = rep(1, nrow(d_fit_sus_mort_postno)),
+                sus_mort_postno_left_age_e = d_fit_sus_mort_postno$left_age_e,
+                sus_mort_postno_right_age_r = d_fit_sus_mort_postno$right_age_r,
+                sus_mort_postno_right_age_s = d_fit_sus_mort_postno$right_age_s,
+                sus_mort_postno_dn1 = d_fit_sus_mort_postno$left_age_e,
+                sus_mort_postno_sex = d_fit_sus_mort_postno$sex,
+                sus_mort_postno_age2date = sus_mort_postno_age2date,
+                y_icap_cens = rep(1, nrow(d_fit_icap_cens)),
+                icap_cens_left_age_e = d_fit_icap_cens$left_age_e,
+                icap_cens_right_age_r = d_fit_icap_cens$right_age_r,
+                icap_cens_sex = d_fit_icap_cens$sex,
+                icap_cens_age2date = icap_cens_age2date,
+                y_icap_mort = rep(1, nrow(d_fit_icap_mort)),
+                icap_mort_left_age_e = d_fit_icap_mort$left_age_e,
+                icap_mort_right_age_r = d_fit_icap_mort$right_age_r,
+                icap_mort_right_age_s = d_fit_icap_mort$right_age_s,
+                icap_mort_sex = d_fit_icap_mort$sex,
+                icap_mort_age2date = icap_mort_age2date,
+                y_rec_neg_cens_posttest = rep(1, nrow(d_fit_rec_neg_cens_posttest)),
+                rec_neg_cens_posttest_left_age_e = d_fit_rec_neg_cens_posttest$left_age_e,
+                rec_neg_cens_posttest_right_age_r = d_fit_rec_neg_cens_posttest$right_age_r,
+                rec_neg_cens_posttest_dn1 = d_fit_rec_neg_cens_posttest$ageweek_recap,
+                rec_neg_cens_posttest_sex = d_fit_rec_neg_cens_posttest$sex,
+                rec_neg_cens_posttest_age2date = rec_neg_cens_posttest_age2date,
+                y_rec_neg_mort = rep(1, nrow(d_fit_rec_neg_mort)),
+                rec_neg_mort_left_age_e = d_fit_rec_neg_mort$left_age_e,
+                rec_neg_mort_right_age_r = d_fit_rec_neg_mort$right_age_r,
+                rec_neg_mort_right_age_s = d_fit_rec_neg_mort$right_age_s,
+                rec_neg_mort_sex = d_fit_rec_neg_mort$sex,
+                rec_neg_mort_age2date = rec_neg_mort_age2date,
                 y_rec_pos_mort = rep(1, nrow(d_fit_rec_pos_mort)),
                 rec_pos_mort_left_age_e = d_fit_rec_pos_mort$left_age_e,
                 rec_pos_mort_right_age_r = d_fit_rec_pos_mort$right_age_r,
                 rec_pos_mort_right_age_s = d_fit_rec_pos_mort$right_age_s,
-                rec_pos_mort_dn1 = d_fit_rec_pos_mort$ageweek_recap,
-                rec_pos_mort_dn = d_fit_rec_pos_mort$right_age_s,
+                rec_pos_mort_dn1 = d_fit_rec_pos_mort$left_age_e,
+                rec_pos_mort_dn = d_fit_rec_pos_mort$ageweek_recap,
                 rec_pos_mort_sex = d_fit_rec_pos_mort$sex,
-                rec_pos_mort_age2date = rec_pos_mort_age2date#,
-                # y_rec_pos_cens = rep(1, nrow(d_fit_rec_pos_cens)),
-                # rec_pos_cens_left_age_e = d_fit_rec_pos_cens$left_age_e,
-                # rec_pos_cens_right_age_r = d_fit_rec_pos_cens$right_age_r,
-                # rec_pos_cens_dn1 = d_fit_rec_pos_cens$ageweek_recap,
-                # rec_pos_cens_dn = d_fit_rec_pos_cens$right_age_r,
-                # rec_pos_cens_sex = d_fit_rec_pos_cens$sex,
-                # rec_pos_cens_age2date = rec_pos_cens_age2date,
-                # y_idead = rep(1, nrow(d_fit_idead)),
-                # idead_left_age_e = d_fit_idead$left_age_e,
-                # idead_right_age_r = d_fit_idead$right_age_r,
-                # idead_right_age_s = d_fit_idead$right_age_s,
-                # idead_dn1 = d_fit_idead$left_age_e,
-                # idead_dn = d_fit_idead$right_age_s,
-                # idead_sex = d_fit_idead$sex,
-                # idead_age2date = idead_age2date
+                rec_pos_mort_age2date = rec_pos_mort_age2date,
+                y_rec_pos_cens = rep(1, nrow(d_fit_rec_pos_cens)),
+                rec_pos_cens_left_age_e = d_fit_rec_pos_cens$left_age_e,
+                rec_pos_cens_right_age_r = d_fit_rec_pos_cens$right_age_r,
+                rec_pos_cens_dn1 = d_fit_rec_pos_cens$ageweek_recap,
+                rec_pos_cens_dn = d_fit_rec_pos_cens$right_age_r,
+                rec_pos_cens_sex = d_fit_rec_pos_cens$sex,
+                rec_pos_cens_age2date = rec_pos_cens_age2date,
+                y_idead = rep(1, nrow(d_fit_idead)),
+                idead_left_age_e = d_fit_idead$left_age_e,
+                idead_right_age_r = d_fit_idead$right_age_r,
+                idead_right_age_s = d_fit_idead$right_age_s,
+                idead_dn1 = d_fit_idead$left_age_e,
+                idead_dn = d_fit_idead$right_age_s,
+                idead_sex = d_fit_idead$sex,
+                idead_age2date = idead_age2date
                 )
 
 
@@ -687,20 +684,19 @@ nimData <- list(Z_period = Z_period,
 ### Constants for MCMC
 #######################################
 
-nimConsts <- list(
-                  nT_overall_period = nT_overall,
+nimConsts <- list(nT_overall = nT_overall,
                   nT_period_presurv = nT_period_presurv,
                   nknots_age = nknots_age,
                   nknots_period = nknots_period,
                   nT_age_surv = nT_age_surv,
                   nT_period_surv = nT_period_surv,
-                  n_age = n_age,
+                  n_period_lookup = n_period_lookup,
                   n_agef = n_agef,
                   n_agem = n_agem,
                   n_period = n_period,
                   n_adj_period = n_adj_period,
                   # n_adj_sp = n_adj_sp,
-                  n_sect = n_sect,
+                  # n_sect = n_sect,
                   # scale = scale,
                   space = rep(0, n_sect),
                   n_age_lookup_f = length(age_lookup_f),
@@ -709,7 +705,7 @@ nimConsts <- list(
                   nInfHarvest = nrow(d_fit_hunt_pos),
                   nSusHarvest = nrow(d_fit_hunt_neg),
                   nSusCensTest = nrow(d_fit_sus_cens_posttest),
-                  # nSusCensNo = nrow(d_fit_sus_cens_postno) + nrow(d_fit_endlive),
+                  nSusCensNo = nrow(d_fit_sus_cens_postno) + nrow(d_fit_endlive),
                   nSusMortTest = nrow(d_fit_sus_mort_posttest),
                   nSusMortNoTest = nrow(d_fit_sus_mort_postno),
                   nIcapCens = nrow(d_fit_icap_cens),
@@ -717,13 +713,13 @@ nimConsts <- list(
                   nRecNegCensTest = nrow(d_fit_rec_neg_cens_posttest),
                   nRecNegMort = nrow(d_fit_rec_neg_mort),
                   nRecPosMort = nrow(d_fit_rec_pos_mort),
-                  nRecPosCens = nrow(d_fit_rec_pos_cens),
+                  # nRecPosCens = nrow(d_fit_rec_pos_cens),#there is only 1
                   nNegCapPosMort = nrow(d_fit_idead),
                   sect_hunt_pos = sect_hunt_pos,
                   sect_hunt_neg = sect_hunt_neg,
                   sect_sus_cens_posttest = d_fit_sus_cens_posttest$sect,
-                  # sect_sus_cens_postno = c(d_fit_sus_cens_postno$sect,
-                  #                         d_fit_endlive$sect),
+                  sect_sus_cens_postno = c(d_fit_sus_cens_postno$sect,
+                                          d_fit_endlive$sect),
                   sect_sus_mort_posttest = d_fit_sus_mort_posttest$sect,
                   sect_sus_mort_postno = d_fit_sus_mort_postno$sect,
                   sect_icap_cens = d_fit_icap_cens$sect,
@@ -767,13 +763,15 @@ initsFun <- function()list(
                           )
 nimInits <- initsFun()
 
+start_Rmodel <- Sys.time()
 Rmodel <- nimbleModel(code = modelcode,
                       constants = nimConsts,
                       data = nimData,
                       inits = initsFun(),
-                      # calculate = FALSE,
+                      calculate = FALSE,
                       check = FALSE
                       )
+end_Rmodel <- Sys.time() - start_Rmodel
 Rmodel$initializeInfo()
 
 #######################################
@@ -815,14 +813,21 @@ confMCMC <- configureMCMC(Rmodel,
                          # enableWAIC = TRUE,
                          useConjugacy = FALSE)
 nimMCMC <- buildMCMC(confMCMC)
+
+start_compile_rmodel <- Sys.time()
 Cnim <- compileNimble(Rmodel)
+endtime_rmodel_compile <- Sys.time() - start_compile_rmodel
+for(i in 1:10){beepr::beep(1)}
+start_compile_mcmc <- Sys.time()
 CnimMCMC <- compileNimble(nimMCMC,
                          project = Rmodel)
+endtime_mcmc <- Sys.time() - start_compile_mcmc
+       
 for(i in 1:10){beepr::beep(1)}
 
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 20,
-                  nburnin = 10,
+                  niter = 1000,
+                  nburnin = 0,
                   nchains = 1,
                   inits = initsFun,
                   samplesAsCodaMCMC = TRUE,

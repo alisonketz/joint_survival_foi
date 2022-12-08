@@ -117,8 +117,8 @@ low_endlive <- d_surv[which(is.na(d_surv[,2])),9]
 nrow(d_surv[which(is.na(d_surv[,2])),])
 nrow(df_cap) - (nrow(d_cens) + nrow(d_mort))
 
-nT_period <- max(d_mort$sweek)
-nT_period_month <- max(d_mort$smonth)
+nT_period <- max(d_mort$sweek) + 1
+nT_period_month <- max(d_mort$smonth) + 1
 
 #Right censor these
 d_surv[which(is.na(d_surv[,2])),2] <- nT_period
@@ -244,8 +244,8 @@ low_recap_neg <- low_recap_neg[-rm_censor_fix_neg]
 ##################################################
 ###
 ### removing the deer that were VERY fast
-### right censors. i.e., lost collars within 
-### first week after capture 
+### right censors. i.e., lost collars within
+### first week after capture
 ###
 ### 5052 6400 6081 5257 7113 7787
 ###

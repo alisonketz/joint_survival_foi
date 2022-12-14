@@ -706,8 +706,8 @@ nimble::registerDistributions(list(
 #this one is not working because r-e ==1, so there's indexing problems in the calculations for 
 #several observations, including indx = 4
 
-d_fit_endlive <- d_fit_endlive[-49,]
-endlive_age2date <- endlive_age2date[-49]
+# d_fit_endlive <- d_fit_endlive[-49,]
+# endlive_age2date <- endlive_age2date[-49]
 
 
 #######################################################################
@@ -876,8 +876,8 @@ for(i in 1:nrow(d_fit_sus_mort_posttest)){
 test[c(112,122,280,372,423)]
 
 
-d_fit_sus_mort_posttest <- d_fit_sus_mort_posttest[-c(112,122,280,372,423),]
-sus_mort_posttest_age2date <- sus_mort_posttest_age2date[-c(112,122,280,372,423)]
+# d_fit_sus_mort_posttest <- d_fit_sus_mort_posttest[-c(112,122,280,372,423),]
+# sus_mort_posttest_age2date <- sus_mort_posttest_age2date[-c(112,122,280,372,423)]
 
 #######################################################################
 ###
@@ -1086,7 +1086,7 @@ assign('dSusMortNoTest', dSusMortNoTest, envir = .GlobalEnv)
 dIcapCens <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
-        x = integer(),
+        x = integer(0),
         e = integer(0), #e, age of entry
         r = integer(0), #r, age of last known alive
         sex = integer(0),
@@ -1111,17 +1111,16 @@ dIcapCens <- nimble::nimbleFunction(
     lam_inf <- nimNumeric(r)
     lam_foi <- nimNumeric(r)
     lam_sus <- nimNumeric(r)
-    lik_temp <- nimNumeric(e-1)
+    lik_temp <- nimNumeric(e - 1)
     
     #############################################
     # preliminary hazards for the likelihood
     #############################################
-
     n_indx_sus <- length(1:(e - 2))
     #survival hazard for susceptible deer
     lam_sus[1:(e - 2)] <- exp(rep(beta0_sus, n_indx_sus) +
                     age_effect_surv[1:(e - 2)] +
-                    period_effect_surv[(e + age2date):(e - 2 + age2date)] +
+                    period_effect_surv[(1 + age2date):(e - 2 + age2date)] +
                     rep(beta_sex * sex, n_indx_sus))
 
     #survival hazard while infected
@@ -1144,16 +1143,22 @@ dIcapCens <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    for(k in 1:(e - 1)) {
+    lik_temp[1] <- lam_foi[1] * exp(-sum(lam_inf[1:(e - 1)]))
+
+    for(k in 2:(e - 2)) {
      lik_temp[k] <- lam_foi[k] *
                exp(-sum(lam_sus[1:(k - 1)])) *
                exp(-sum(lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[k:(e - 1)]))
     }
 
+    lik_temp[e-1] <- lam_foi[e-1] *
+        exp(-sum(lam_sus[1:(e-2)])) *
+        exp(-sum(lam_foi[1:(e-2)])) *
+        exp(-lam_inf[(e - 1)])
+
     lik <- exp(-sum(lam_inf[e:(r - 1)])) * sum(lik_temp[1:(e - 1)])
     llik <- log(lik)
-
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood
   })
@@ -1188,28 +1193,28 @@ nimble::registerDistributions(list(
 # for a user-defined distribution
 assign('dIcapCens', dIcapCens, envir = .GlobalEnv)
 
-# i=2
-# dIcapCens(
-#         x = 1,
-#         e = d_fit_icap_cens$left_age_e[i],
-#         r = d_fit_icap_cens$right_age_r[i],
-#         sex = d_fit_icap_cens$sex[i],
-#         age2date = icap_cens_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_inf = beta0_inf,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         )
+i=1
+dIcapCens(
+        x = 1,
+        e = d_fit_icap_cens$left_age_e[i],
+        r = d_fit_icap_cens$right_age_r[i],
+        sex = d_fit_icap_cens$sex[i],
+        age2date = icap_cens_age2date[i],
+        beta_sex = beta_sex,
+        beta0_inf = beta0_inf,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = 0,
+        log = TRUE
+        )
 # test=c()
 # for(i in 1:nrow(d_fit_icap_cens)){
 #     test[i] <-  dIcapCens(

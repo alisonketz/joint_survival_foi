@@ -828,7 +828,7 @@ for(i in 1:10){beepr::beep(1)}
 
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 10,
+                  niter = 100,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,
@@ -846,16 +846,16 @@ endtime_rmodel_compile
 endtime_mcmc
 runtime
 
-# sink("runtime_allsteps.txt")
-# cat("Rmodel:\n")
-# end_Rmodel
-# cat("\nCompile Rmodel:\n")
-# endtime_rmodel_compile
-# cat("\nCompile MCMC:\n")
-# endtime_mcmc
-# cat("\nRun MCMC 10 iter:\n")
-# runtime
-# sink()
+sink("runtime_allsteps.txt")
+cat("Rmodel:\n")
+end_Rmodel
+cat("\nCompile Rmodel:\n")
+endtime_rmodel_compile
+cat("\nCompile MCMC:\n")
+endtime_mcmc
+cat("\nRun MCMC 10 iter:\n")
+runtime
+sink()
 
 # reps  <- 2000
 # bin <- reps * .5

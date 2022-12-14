@@ -818,28 +818,28 @@ nimble::registerDistributions(list(
 # ###for a user-defined distribution
 assign('dSusMortTest', dSusMortTest, envir = .GlobalEnv)
 
-i=140
-try(dSusMortTest(
-        x = 1,
-        e = d_fit_sus_mort_posttest$left_age_e[i],
-        r = d_fit_sus_mort_posttest$right_age_r[i],
-        s = d_fit_sus_mort_posttest$right_age_s[i],
-        sex = d_fit_sus_mort_posttest$sex[i],
-        age2date = sus_mort_posttest_age2date[i],
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = 0,
-        log = TRUE
-        ))
+# i=140
+# try(dSusMortTest(
+#         x = 1,
+#         e = d_fit_sus_mort_posttest$left_age_e[i],
+#         r = d_fit_sus_mort_posttest$right_age_r[i],
+#         s = d_fit_sus_mort_posttest$right_age_s[i],
+#         sex = d_fit_sus_mort_posttest$sex[i],
+#         age2date = sus_mort_posttest_age2date[i],
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = 0,
+#         log = TRUE
+#         ))
 
 # warning: logProb of data node y_sus_mort_posttest[112]: logProb is -Inf.
 # warning: logProb of data node y_sus_mort_posttest[122]: logProb is -Inf.
@@ -848,32 +848,32 @@ try(dSusMortTest(
 # warning: logProb of data node y_sus_mort_posttest[423]: logProb is -Inf.
 # d_fit_sus_mort_posttest[c(112,122,280,372,423),]
 
-test <- c()
-for(i in 1:nrow(d_fit_sus_mort_posttest)){
-    test[i] <-  dSusMortTest(
-        x = 1,
-        e = d_fit_sus_mort_posttest$left_age_e[i],
-        r = d_fit_sus_mort_posttest$right_age_r[i],
-        s = d_fit_sus_mort_posttest$right_age_s[i],
-        sex = d_fit_sus_mort_posttest$sex[i],
-        age2date = sus_mort_posttest_age2date[i],
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = 0,
-        log = TRUE
-        )
+# test <- c()
+# for(i in 1:nrow(d_fit_sus_mort_posttest)){
+#     test[i] <-  dSusMortTest(
+#         x = 1,
+#         e = d_fit_sus_mort_posttest$left_age_e[i],
+#         r = d_fit_sus_mort_posttest$right_age_r[i],
+#         s = d_fit_sus_mort_posttest$right_age_s[i],
+#         sex = d_fit_sus_mort_posttest$sex[i],
+#         age2date = sus_mort_posttest_age2date[i],
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = 0,
+#         log = TRUE
+#         )
 
-}
-test[c(112,122,280,372,423)]
+# }
+# test[c(112,122,280,372,423)]
 
 
 # d_fit_sus_mort_posttest <- d_fit_sus_mort_posttest[-c(112,122,280,372,423),]

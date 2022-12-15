@@ -2116,6 +2116,7 @@ assign('dRecPosMort', dRecPosMort, envir = .GlobalEnv)
 ###   Overleaf Equation (27)
 ###
 #######################################################################
+
 dRecPosCens <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
@@ -2360,26 +2361,31 @@ dNegCapPosMort <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    lik_temp[dn1] <- lam_foi[dn1] *
-                exp(-sum(lam_foi[1:(dn1 - 1)])) *
-                exp(-sum(lam_inf[dn1:(r - 1)]))
+    liktemp[dn1 + 1] <- lam_foi[dn1 + 1] *
+                      exp(-sum(lam_inf[(dn1 + 1):(r - 1)])) *
+                      (1 - exp(-sum(lam_inf[r:(s - 1)])))
 
-    for(k in (dn1 + 1):(r - 1)) {
-     lik_temp[k] <- lam_foi[k] *
-                    exp(-sum(lam_sus[e:(k - 1)])) *
-                    exp(-sum(lam_foi[1:(k - 1)])) *
-                    exp(-sum(lam_inf[k:(r - 1)]))
+    for (k in (dn1 + 2):(r - 2)) {
+        liktemp[k] <- lam_foi[k] *
+                      exp(-sum(lam_foi[(dn1 + 1):k])) *
+                      exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
+                      exp(-sum(lam_inf[k:(r - 1)])) *
+                      (1 - exp(-sum(lam_inf[r:(s - 1)])))
     }
-    lik_temp[r] <- lam_foi[r] *
-                    exp(-sum(lam_sus[e:(r - 1)])) *
-                    exp(-sum(lam_foi[1:(r - 1)])) 
-                    
-    lik_temp[dn] <- lam_foi[dn] *
-               exp(-sum(lam_sus[e:(dn - 1)])) *
-               exp(-sum(lam_foi[1:(dn - 1)]))
+    for (k in (r - 1):(s - 2)) {
+        liktemp[k] <- lam_foi[k] *
+                      exp(-sum(lam_foi[(dn1 + 1):k])) *
+                      exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
+                      exp(-sum(lam_inf[k:(r - 1)])) *
+                      (1 - exp(-sum(lam_inf[k:(s - 1)])))
+    }
+    liktemp[(s - 1)] <- lam_foi[(s - 1)] *
+                        exp(-sum(lam_foi[(dn1 + 1):(s - 1)])) *
+                        exp(-sum(lam_sus[(dn1 + 1):((s - 1) - 1)])) *
+                        ((1 - exp(-lam_inf[(s - 1)])) + lam_inf[(s - 1)])
+    lik <- (1 - exp(-sum(lam_sus[r:(s - 1)]))) *
+           sum(liktemp[(dn1 + 1):(s - 1)])
 
-    lik <- (1 - exp(-sum(lam_inf[r:(s - 1)]))) *
-            sum(lik_temp[dn1:dn])
     llik <- log(lik)
 
     returnType(double(0))
@@ -2420,30 +2426,30 @@ nimble::registerDistributions(list(
 assign('dNegCapPosMort', dNegCapPosMort, envir = .GlobalEnv)
 
 # i=1
-dNegCapPosMort(
-        x = 1,
-        e = d_fit_idead$left_age_e[i],
-        r = d_fit_idead$right_age_r[i],
-        s = d_fit_idead$right_age_s[i],
-        dn1 = d_fit_idead$left_age_e[i],
-        dn = d_fit_idead$right_age_s[i],
-        sex = d_fit_idead$sex[i],
-        age2date = idead_age2date[i],
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = 0,
-        log = TRUE
-        )
+# dNegCapPosMort(
+#         x = 1,
+#         e = d_fit_idead$left_age_e[i],
+#         r = d_fit_idead$right_age_r[i],
+#         s = d_fit_idead$right_age_s[i],
+#         dn1 = d_fit_idead$left_age_e[i],
+#         dn = d_fit_idead$right_age_s[i],
+#         sex = d_fit_idead$sex[i],
+#         age2date = idead_age2date[i],
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = 0,
+#         log = TRUE
+#         )
 
 # test <- c()
 # for(i in 1:nrow(d_fit_idead)){

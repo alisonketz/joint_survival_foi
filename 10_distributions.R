@@ -2350,7 +2350,7 @@ dNegCapPosMort <- nimble::nimbleFunction(
         )
 
     #force of infection infection hazard
-    lam_foi[1:(dn-1)] <- exp(rep(space, dn - 1) +
+    lam_foi[1:(dn - 1)] <- exp(rep(space, dn - 1) +
         sex * (f_age_foi[age_lookup_f[1:(dn - 1)]] +
             f_period_foi[period_lookup[(1 + age2date):(dn - 1 + age2date)]]) +
         (1 - sex) * (m_age_foi[age_lookup_m[1:(dn - 1)]] +
@@ -2360,12 +2360,20 @@ dNegCapPosMort <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    for(k in dn1:r) {
+    lik_temp[dn1] <- lam_foi[dn1] *
+                exp(-sum(lam_foi[1:(dn1 - 1)])) *
+                exp(-sum(lam_inf[dn1:(r - 1)]))
+
+    for(k in (dn1 + 1):(r - 1)) {
      lik_temp[k] <- lam_foi[k] *
                     exp(-sum(lam_sus[e:(k - 1)])) *
                     exp(-sum(lam_foi[1:(k - 1)])) *
                     exp(-sum(lam_inf[k:(r - 1)]))
     }
+    lik_temp[r] <- lam_foi[r] *
+                    exp(-sum(lam_sus[e:(r - 1)])) *
+                    exp(-sum(lam_foi[1:(r - 1)])) 
+                    
     lik_temp[dn] <- lam_foi[dn] *
                exp(-sum(lam_sus[e:(dn - 1)])) *
                exp(-sum(lam_foi[1:(dn - 1)]))
@@ -2412,30 +2420,30 @@ nimble::registerDistributions(list(
 assign('dNegCapPosMort', dNegCapPosMort, envir = .GlobalEnv)
 
 # i=1
-# dNegCapPosMort(
-#         x = 1,
-#         e = d_fit_idead$left_age_e[i],
-#         r = d_fit_idead$right_age_r[i],
-#         s = d_fit_idead$right_age_s[i],
-#         dn1 = d_fit_idead$left_age_e[i],
-#         dn = d_fit_idead$right_age_s[i],
-#         sex = d_fit_idead$sex[i],
-#         age2date = idead_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         )
+dNegCapPosMort(
+        x = 1,
+        e = d_fit_idead$left_age_e[i],
+        r = d_fit_idead$right_age_r[i],
+        s = d_fit_idead$right_age_s[i],
+        dn1 = d_fit_idead$left_age_e[i],
+        dn = d_fit_idead$right_age_s[i],
+        sex = d_fit_idead$sex[i],
+        age2date = idead_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = 0,
+        log = TRUE
+        )
 
 # test <- c()
 # for(i in 1:nrow(d_fit_idead)){

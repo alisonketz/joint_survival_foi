@@ -2144,20 +2144,20 @@ dRecPosCens <- nimble::nimbleFunction(
         ) {
 
     llik<-0 #intialize log-likelihood
-    lam_foi <- nimNumeric(r)
-    lam_sus <- nimNumeric(r)
-    lam_inf <- nimNumeric(r)
-    liktemp <- nimNumeric(r)
+    lam_foi <- nimNumeric(r-1)
+    lam_sus <- nimNumeric(r-1)
+    lam_inf <- nimNumeric(r-1)
+    liktemp <- nimNumeric(r-1)
 
     #############################################
     # preliminary hazards for the likelihood
     #############################################
 
     #survival hazard for susceptible deer
-    n_indx_sus <- length(e:(dn - 1))
-    lam_sus[e:(dn - 1)] <- exp(rep(beta0_sus, n_indx_sus)  +
-                    age_effect_surv[e:(dn - 1)] +
-                    period_effect_surv[(e + age2date):(dn - 1 + age2date)] +
+    n_indx_sus <- length(e:dn)
+    lam_sus[e:dn] <- exp(rep(beta0_sus, n_indx_sus)  +
+                    age_effect_surv[e:dn] +
+                    period_effect_surv[(e + age2date):(dn + age2date)] +
                     rep(beta_sex * sex, n_indx_sus))
     
     #survival hazard while infected
@@ -2170,11 +2170,11 @@ dRecPosCens <- nimble::nimbleFunction(
         )
 
     #force of infection infection hazard
-    lam_foi[1:(dn-1)] <- exp(rep(space, dn - 1) +
-        sex * (f_age_foi[age_lookup_f[1:(dn - 1)]] +
-            f_period_foi[period_lookup[(1 + age2date):(dn - 1 + age2date)]]) +
-        (1 - sex) * (m_age_foi[age_lookup_m[1:(dn - 1)]] +
-            m_period_foi[period_lookup[(1 + age2date):(dn - 1 + age2date)]])
+    lam_foi[1:dn] <- exp(rep(space, dn) +
+        sex * (f_age_foi[age_lookup_f[1:dn]] +
+            f_period_foi[period_lookup[(1 + age2date):(dn + age2date)]]) +
+        (1 - sex) * (m_age_foi[age_lookup_m[1:dn]] +
+            m_period_foi[period_lookup[(1 + age2date):(dn + age2date)]])
         )
 
     #######################################
@@ -2191,8 +2191,8 @@ dRecPosCens <- nimble::nimbleFunction(
                     exp(-sum(lam_foi[1:(k-1)])) *
                     exp(-sum(lam_inf[k:(r-1)]))
     }
-    lik <- exp(-sum(lam_sus[e:(dn - 1)])) *
-           exp(-sum(lam_foi[(1:(dn - 1))])) *
+    lik <- exp(-sum(lam_sus[e:dn1])) *
+           exp(-sum(lam_foi[1:dn1])) *
            sum(liktemp[(dn1 + 1):dn])
     llik <- log(lik)
     returnType(double(0))
@@ -2230,30 +2230,30 @@ nimble::registerDistributions(list(
 ###for a user-defined distribution
 assign('dRecPosCens', dRecPosCens, envir = .GlobalEnv)
 
-i=1
-dRecPosCens(
-        x = 1,
-        e = d_fit_rec_pos_cens$left_age_e[i],
-        r = d_fit_rec_pos_cens$right_age_r[i],
-        dn1 = d_fit_rec_pos_cens$left_age_e[i],
-        dn = d_fit_rec_pos_cens$ageweek_recap[i],
-        sex = d_fit_rec_pos_cens$sex[i],
-        age2date = rec_pos_cens_age2date[i],
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = 0,
-        log = TRUE
-        )
+# i=1
+# dRecPosCens(
+#         x = 1,
+#         e = d_fit_rec_pos_cens$left_age_e[i],
+#         r = d_fit_rec_pos_cens$right_age_r[i],
+#         dn1 = d_fit_rec_pos_cens$left_age_e[i],
+#         dn = d_fit_rec_pos_cens$ageweek_recap[i],
+#         sex = d_fit_rec_pos_cens$sex[i],
+#         age2date = rec_pos_cens_age2date[i],
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = 0,
+#         log = TRUE
+#         )
 
 
 # test <- c()

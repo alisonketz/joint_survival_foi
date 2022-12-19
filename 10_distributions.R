@@ -2191,7 +2191,6 @@ dRecPosCens <- nimble::nimbleFunction(
                     exp(-sum(lam_foi[1:(k-1)])) *
                     exp(-sum(lam_inf[k:(r-1)]))
     }
-
     lik <- exp(-sum(lam_sus[e:(dn - 1)])) *
            exp(-sum(lam_foi[(1:(dn - 1))])) *
            sum(liktemp[(dn1 + 1):dn])
@@ -2231,30 +2230,30 @@ nimble::registerDistributions(list(
 ###for a user-defined distribution
 assign('dRecPosCens', dRecPosCens, envir = .GlobalEnv)
 
-# i=1
-# dRecPosCens(
-#         x = 1,
-#         e = d_fit_rec_pos_cens$left_age_e[i],
-#         r = d_fit_rec_pos_cens$right_age_r[i],
-#         dn1 = d_fit_rec_pos_cens$left_age_e[i],
-#         dn = d_fit_rec_pos_cens$ageweek_recap[i],
-#         sex = d_fit_rec_pos_cens$sex[i],
-#         age2date = rec_pos_cens_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         )
+i=1
+dRecPosCens(
+        x = 1,
+        e = d_fit_rec_pos_cens$left_age_e[i],
+        r = d_fit_rec_pos_cens$right_age_r[i],
+        dn1 = d_fit_rec_pos_cens$left_age_e[i],
+        dn = d_fit_rec_pos_cens$ageweek_recap[i],
+        sex = d_fit_rec_pos_cens$sex[i],
+        age2date = rec_pos_cens_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = 0,
+        log = TRUE
+        )
 
 
 # test <- c()

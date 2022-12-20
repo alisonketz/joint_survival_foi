@@ -1438,7 +1438,6 @@ dRecNegCensTest <- nimble::nimbleFunction(
         x = integer(0),
         e = integer(0), #e, age of entry
         r = integer(0), #r, age of last known alive
-        dn1 = integer(0), #interval of last test negative
         sex = integer(0),
         age2date = integer(0),
         beta_sex = double(0),
@@ -1458,10 +1457,9 @@ dRecNegCensTest <- nimble::nimbleFunction(
         ) {
 
     llik <- 0 #intialize log-likelihood
-    lam_foi <- nimNumeric(r)
-    lam_sus <- nimNumeric(r)
-    lam_inf <- nimNumeric(r)
-    liktemp <- nimNumeric(dn1 - 1)
+    lam_foi <- nimNumeric(r - 1)
+    lam_sus <- nimNumeric(r - 1)
+    lam_inf <- nimNumeric(r - 1)
 
     #############################################
     # preliminary hazards for the likelihood
@@ -1470,9 +1468,9 @@ dRecNegCensTest <- nimble::nimbleFunction(
     indx_period_surv <- (e + age2date):(r - 1 + age2date)
 
     #survival hazard for susceptible deer
-    lam_sus[1:(r - e)] <- exp(rep(beta0_sus, r - e) +
-                          age_effect_surv[1:(r - e)] +
-                          period_effect_surv[indx_period_surv[1:(r - e)]] +
+    lam_sus[e:(r - 1)] <- exp(rep(beta0_sus, r - e) +
+                          age_effect_surv[e:(r - 1)] +
+                          period_effect_surv[indx_period_surv[e:(r - 1)]] +
                           rep(beta_sex * sex, r - e)
                           )
 
@@ -1492,11 +1490,7 @@ dRecNegCensTest <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    for (k in 1:(dn1 - 1)) {
-        liktemp[k] <- lam_foi[k] * exp(-sum(lam_sus[1:k]))
-    }
-    lik <- sum(liktemp[1:(dn1 - 1)]) *
-           exp(-sum(lam_sus[e:(r - 1)])) *
+    lik <- exp(-sum(lam_sus[e:(r - 1)])) *
            exp(-sum(lam_foi[1:(r - 1)]))
     llik <- log(lik)
     returnType(double(0))
@@ -1505,10 +1499,9 @@ dRecNegCensTest <- nimble::nimbleFunction(
 
 nimble::registerDistributions(list(
     dRecNegCensTest = list(
-        BUGSdist = 'dRecNegCensTest(e,r,dn1,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        BUGSdist = 'dRecNegCensTest(e,r,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("e = integer(0)",
                     "r = integer(0)",
-                    "dn1 = integer(0)",
                     "sex = integer(0)",
                     "age2date = integer(0)",
                     "beta_sex = double(0)",
@@ -1664,9 +1657,9 @@ dRecNegCensPostNo <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    liktemp[(dn1)] <- lam_foi[(dn1 + 1)] * exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
+    liktemp[(dn1+1)] <- lam_foi[(dn1 + 1)] * exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
 
-    for(k in (dn1 + 1):(r - 1)){
+    for(k in (dn1 + 2):(r - 1)){
         liktemp[k] <- lam_foi[k] *
                       exp(-sum(lam_sus[dn1:(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)]))
@@ -1675,7 +1668,8 @@ dRecNegCensPostNo <- nimble::nimbleFunction(
     lik <- exp(-sum(lam_sus[e:dn1])) *
            exp(-sum(lam_foi[1:dn1])) *
            sum(liktemp[(e + 1):(r - 1)]) +
-           exp(-sum(lam_foi[1:(r - 1)])) * exp(-sum(lam_sus[e:(r - 1)]))
+           exp(-sum(lam_foi[1:(r - 1)])) *
+           exp(-sum(lam_sus[e:(r - 1)]))
 
     llik <- log(lik)
     returnType(double(0))

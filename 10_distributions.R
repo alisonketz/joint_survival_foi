@@ -2322,7 +2322,7 @@ dNegCapPosMort <- nimble::nimbleFunction(
     lam_inf <- nimNumeric(s)
     lam_foi <- nimNumeric(s)
     lam_sus <- nimNumeric(s)
-    lik_temp <- nimNumeric(s)
+    liktemp <- nimNumeric(s)
 
     #############################################
     # preliminary hazards for the likelihood
@@ -2472,3 +2472,4 @@ assign('dNegCapPosMort', dNegCapPosMort, envir = .GlobalEnv)
 #         )
 #  }
 # test
+

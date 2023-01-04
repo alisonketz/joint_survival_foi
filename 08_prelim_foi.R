@@ -148,7 +148,7 @@ cwd_df <- cwd_df[order(match(cwd_df$dsection, study_df$dsection)), ]
 n_sect <- length(unique(study_df$dsection))
 sect_num <- as.numeric(as.factor(study_df$dsection))
 
-# for indexing sections within the car model
+#for indexing sections within the car model
 sect <- rep(NA,n_sect)
 d_surv$sect <- rep(NA,nrow(d_surv))
 d_fit_sus_cens_posttest$sect <- rep(NA,nrow(d_fit_sus_cens_posttest))
@@ -424,3 +424,12 @@ d_fit_hunt_pos <- cwd_df[cwd_df$teststatus == 1, ]
 
 sect_hunt_neg <- sect[cwd_df$teststatus == 0]
 sect_hunt_pos <- sect[cwd_df$teststatus == 1]
+
+d_fit_hunt_neg$sect_hunt_neg <- sect_hunt_neg
+d_fit_hunt_pos$sect_hunt_pos <- sect_hunt_pos
+
+test <- d_fit_hunt_neg %>% select(ageweeks,birthweek,sex,sect_hunt_neg) %>%
+               group_by(ageweeks,birthweek,sex,sect_hunt_neg) %>% 
+               count()
+
+dim(test)

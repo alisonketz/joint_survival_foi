@@ -432,4 +432,3 @@ test <- d_fit_hunt_neg %>% select(ageweeks,birthweek,sex,sect_hunt_neg) %>%
                group_by(ageweeks,birthweek,sex,sect_hunt_neg) %>% 
                count()
 
-dim(test)

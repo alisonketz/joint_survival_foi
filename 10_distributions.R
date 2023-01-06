@@ -917,6 +917,7 @@ dSusMortNoTest <- nimble::nimbleFunction(
         space = double(0),
         log = double(0)
         ) {
+    
     lam_foi <- nimNumeric(s - 1)
     lam_sus <- nimNumeric(s - 1)
     lam_inf <- nimNumeric(s - 1)

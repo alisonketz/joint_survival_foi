@@ -1142,22 +1142,14 @@ dIcapCens <- nimble::nimbleFunction(
     #######################################
     ### calculating the joint likelihood
     #######################################
-
     lik_temp[1] <- lam_foi[1] * exp(-sum(lam_inf[1:(e - 1)]))
-
-    for(k in 2:(e - 2)) {
+    for(k in 2:(e - 1)){
      lik_temp[k] <- lam_foi[k] *
                exp(-sum(lam_sus[1:(k - 1)])) *
                exp(-sum(lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[k:(e - 1)]))
     }
-
-    lik_temp[e-1] <- lam_foi[e-1] *
-        exp(-sum(lam_sus[1:(e-2)])) *
-        exp(-sum(lam_foi[1:(e-2)])) *
-        exp(-lam_inf[(e - 1)])
-
-    lik <- exp(-sum(lam_inf[e:(r - 1)])) * sum(lik_temp[1:(e - 1)])
+       lik <- exp(-sum(lam_inf[e:(r - 1)])) * sum(lik_temp[1:(e - 1)])
     llik <- log(lik)
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood

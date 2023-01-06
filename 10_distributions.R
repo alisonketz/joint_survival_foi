@@ -384,7 +384,7 @@ dSusCensTest <- nimble::nimbleFunction(
     lam_foi <- nimNumeric(r - 1)
     lam_sus <- nimNumeric(r - 1)
     lam_inf <- nimNumeric(r - 1)
-    liktemp <- nimNumeric(r - 1)
+    lik_temp <- nimNumeric(r - 1)
     indx_sus_period <- nimNumeric(r - 1)
 
     #############################################
@@ -518,7 +518,7 @@ dSusCensNo <- nimble::nimbleFunction(
     lam_foi <- nimNumeric(r - 1)
     lam_sus <- nimNumeric(r - 1)
     lam_inf <- nimNumeric(r - 1)
-    liktemp <- nimNumeric(r - 1)
+    lik_temp <- nimNumeric(r - 1)
     indx_sus_period <- nimNumeric(r - 1)
     
     #############################################
@@ -558,16 +558,16 @@ dSusCensNo <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    liktemp[(e + 1)] <- lam_foi[(e + 1)] * exp(-sum(lam_inf[(e + 1):(r - 1)]))
+    lik_temp[(e + 1)] <- lam_foi[(e + 1)] * exp(-sum(lam_inf[(e + 1):(r - 1)]))
 
     for(k in (e + 2):(r - 1)){
-        liktemp[k] <- lam_foi[k] *
+        lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_sus[e:(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)]))
     }
     lik <- exp(-lam_sus[e]) *
            exp(-sum(lam_foi[1:e])) *
-           sum(liktemp[(e + 1):(r - 1)]) +
+           sum(lik_temp[(e + 1):(r - 1)]) +
            exp(-sum(lam_foi[1:(r - 1)])) *
            exp(-sum(lam_sus[e:(r - 1)]))
     llik <- log(lik)
@@ -917,12 +917,10 @@ dSusMortNoTest <- nimble::nimbleFunction(
         space = double(0),
         log = double(0)
         ) {
-    lik <- 0 #intialize likelihood
-    llik <- 0 #intialize log-likelihood
     lam_foi <- nimNumeric(s - 1)
     lam_sus <- nimNumeric(s - 1)
     lam_inf <- nimNumeric(s - 1)
-    liktemp <- nimNumeric(s - 1)
+    lik_temp <- nimNumeric(s - 1)
 
     #############################################
     # preliminary hazards for the likelihood
@@ -952,31 +950,30 @@ dSusMortNoTest <- nimble::nimbleFunction(
         )
 
     #total probability of getting infected and dying before end of the study
-    liktemp[dn1 + 1] <- lam_foi[dn1 + 1] *
+    lik_temp[dn1 + 1] <- lam_foi[dn1 + 1] *
                       exp(-sum(lam_inf[(dn1 + 1):(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
 
     for (k in (dn1 + 2):(r - 2)) {
-        liktemp[k] <- lam_foi[k] *
+        lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_foi[(dn1 + 1):k])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
     }
     for (k in (r - 1):(s - 2)) {
-        liktemp[k] <- lam_foi[k] *
+        lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_foi[(dn1 + 1):k])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
-                      exp(-sum(lam_inf[k:(r - 1)])) *
                       (1 - exp(-sum(lam_inf[k:(s - 1)])))
     }
-    liktemp[(s - 1)] <- lam_foi[(s - 1)] *
+    lik_temp[(s - 1)] <- lam_foi[(s - 1)] *
                         exp(-sum(lam_foi[(dn1 + 1):(s - 1)])) *
                         exp(-sum(lam_sus[(dn1 + 1):((s - 1) - 1)])) *
-                        ((1 - exp(-lam_inf[(s - 1)])) + lam_inf[(s - 1)])
+                        (lam_inf[(s - 1)])
     lik <- exp(-sum(lam_sus[e:dn1])) *
            exp(-sum(lam_foi[1:dn1])) *
-           sum(liktemp[(dn1 + 1):(s - 1)]) +
+           sum(lik_temp[(dn1 + 1):(s - 1)]) +
            exp(-sum(lam_foi[1:(s - 1)])) *
            exp(-sum(lam_sus[e:(r - 1)])) *
            (1 - exp(-sum(lam_sus[r:(s - 1)])))
@@ -1611,7 +1608,7 @@ dRecNegCensPostNo <- nimble::nimbleFunction(
     lam_foi <- nimNumeric(r)
     lam_sus <- nimNumeric(r)
     lam_inf <- nimNumeric(r)
-    liktemp <- nimNumeric(r-1)
+    lik_temp <- nimNumeric(r-1)
 
     #############################################
     indx_sus_age <- e:(r - 1)
@@ -1649,17 +1646,17 @@ dRecNegCensPostNo <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    liktemp[(dn1+1)] <- lam_foi[(dn1 + 1)] * exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
+    lik_temp[(dn1+1)] <- lam_foi[(dn1 + 1)] * exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
 
     for(k in (dn1 + 2):(r - 1)){
-        liktemp[k] <- lam_foi[k] *
+        lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_sus[dn1:(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)]))
     }
 
     lik <- exp(-sum(lam_sus[e:dn1])) *
            exp(-sum(lam_foi[1:dn1])) *
-           sum(liktemp[(e + 1):(r - 1)]) +
+           sum(lik_temp[(e + 1):(r - 1)]) +
            exp(-sum(lam_foi[1:(r - 1)])) *
            exp(-sum(lam_sus[e:(r - 1)]))
 
@@ -1952,7 +1949,7 @@ dRecPosMort <- nimble::nimbleFunction(
     lam_foi <- nimNumeric(s - 1)
     lam_sus <- nimNumeric(s - 1)
     lam_inf <- nimNumeric(s - 1)
-    liktemp  <- nimNumeric(s - 1)
+    lik_temp  <- nimNumeric(s - 1)
 
     #############################################
     # preliminary hazards for the likelihood
@@ -1984,19 +1981,19 @@ dRecPosMort <- nimble::nimbleFunction(
     #######################################
     ### calculating the joint likelihood
     #######################################
-      liktemp[(dn1 + 1)] <- lam_foi[(dn1 + 1)] *
+      lik_temp[(dn1 + 1)] <- lam_foi[(dn1 + 1)] *
                exp(-sum(lam_foi[1:dn1])) *
                exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
 
     for(k in (dn1+2):(dn-1)) {
-      liktemp[k] <- lam_foi[k] *
+      lik_temp[k] <- lam_foi[k] *
                exp(-sum(lam_sus[e:(k - 1)])) *
                exp(-sum(lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[k:(r - 1)]))
     }
 
     lik <- (1 - exp(-sum(lam_inf[r:(s - 1)]))) *
-            sum(liktemp[dn1:(dn - 1)])
+            sum(lik_temp[dn1:(dn - 1)])
     llik <- log(lik)
 
     returnType(double(0))
@@ -2133,7 +2130,7 @@ dRecPosCens <- nimble::nimbleFunction(
     lam_foi <- nimNumeric(r-1)
     lam_sus <- nimNumeric(r-1)
     lam_inf <- nimNumeric(r-1)
-    liktemp <- nimNumeric(r-1)
+    lik_temp <- nimNumeric(r-1)
 
     #############################################
     # preliminary hazards for the likelihood
@@ -2167,19 +2164,19 @@ dRecPosCens <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    liktemp[(dn1 + 1)] <- lam_foi[(dn1 + 1)] *
+    lik_temp[(dn1 + 1)] <- lam_foi[(dn1 + 1)] *
                     exp(-sum(lam_foi[1:dn1])) *
                     exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
 
     for(k in (dn1 + 2):dn) {
-      liktemp[k] <- lam_foi[k] *
+      lik_temp[k] <- lam_foi[k] *
                     exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                     exp(-sum(lam_foi[1:(k-1)])) *
                     exp(-sum(lam_inf[k:(r-1)]))
     }
     lik <- exp(-sum(lam_sus[e:dn1])) *
            exp(-sum(lam_foi[1:dn1])) *
-           sum(liktemp[(dn1 + 1):dn])
+           sum(lik_temp[(dn1 + 1):dn])
     llik <- log(lik)
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood
@@ -2314,7 +2311,7 @@ dNegCapPosMort <- nimble::nimbleFunction(
     lam_inf <- nimNumeric(s)
     lam_foi <- nimNumeric(s)
     lam_sus <- nimNumeric(s)
-    liktemp <- nimNumeric(s)
+    lik_temp <- nimNumeric(s)
 
     #############################################
     # preliminary hazards for the likelihood
@@ -2346,30 +2343,30 @@ dNegCapPosMort <- nimble::nimbleFunction(
     ### calculating the joint likelihood
     #######################################
 
-    liktemp[dn1 + 1] <- lam_foi[dn1 + 1] *
+    lik_temp[dn1 + 1] <- lam_foi[dn1 + 1] *
                       exp(-sum(lam_inf[(dn1 + 1):(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
 
     for (k in (dn1 + 2):(r - 2)) {
-        liktemp[k] <- lam_foi[k] *
+        lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_foi[(dn1 + 1):k])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
     }
     for (k in (r - 1):(s - 2)) {
-        liktemp[k] <- lam_foi[k] *
+        lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_foi[(dn1 + 1):k])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)])) *
                       (1 - exp(-sum(lam_inf[k:(s - 1)])))
     }
-    liktemp[(s - 1)] <- lam_foi[(s - 1)] *
+    lik_temp[(s - 1)] <- lam_foi[(s - 1)] *
                         exp(-sum(lam_foi[(dn1 + 1):(s - 1)])) *
                         exp(-sum(lam_sus[(dn1 + 1):((s - 1) - 1)])) *
                         ((1 - exp(-lam_inf[(s - 1)])) + lam_inf[(s - 1)])
     lik <- (1 - exp(-sum(lam_sus[r:(s - 1)]))) *
-           sum(liktemp[(dn1 + 1):(s - 1)])
+           sum(lik_temp[(dn1 + 1):(s - 1)])
 
     llik <- log(lik)
 

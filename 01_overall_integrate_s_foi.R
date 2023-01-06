@@ -11,7 +11,7 @@
 
 rm(list = ls())
 
-setwd("~/Documents/integrate_s_foi/s_foi_v5/")
+setwd("~/Documents/integrate_s_foi/s_foi_v5/joint_survival_foi")
 
 library(viridis)
 library(RColorBrewer)

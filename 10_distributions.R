@@ -1108,9 +1108,9 @@ dIcapCens <- nimble::nimbleFunction(
         ) {
 
     llik <- 0 #intialize log-likelihood
-    lam_inf <- nimNumeric(r)
-    lam_foi <- nimNumeric(r)
-    lam_sus <- nimNumeric(r)
+    lam_inf <- nimNumeric(r - 1)
+    lam_foi <- nimNumeric(r - 1)
+    lam_sus <- nimNumeric(r - 1)
     lik_temp <- nimNumeric(e - 1)
     
     #############################################
@@ -1278,9 +1278,9 @@ dIcapMort <- nimble::nimbleFunction(
         ) {
 
     llik <- 0 #intialize log-likelihood
-    lam_inf <- nimNumeric(s)
-    lam_foi <- nimNumeric(s)
-    lam_sus <- nimNumeric(s)
+    lam_inf <- nimNumeric(s - 1)
+    lam_foi <- nimNumeric(s - 1)
+    lam_sus <- nimNumeric(s - 1)
     lik_temp <- nimNumeric(e - 1)
 
     #############################################

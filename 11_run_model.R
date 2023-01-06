@@ -140,26 +140,26 @@ modelcode <- nimbleCode({
   ###
   #######################################################################
 
-  # for (i in 1:nInfHarvest) {
-  #   y_hunt_pos[i] ~ dInfHarvest(
-  #                 a = hunt_pos_ageweeks[i], #age (weeks) at harvest
-  #                 sex = hunt_pos_sex[i],
-  #                 age2date = hunt_pos_age2date[i],
-  #                 beta_sex = beta_sex,
-  #                 beta0_sus = beta0_sus,
-  #                 beta0_inf = beta0_inf,
-  #                 age_effect_surv = age_effect_survival[1:nT_age_surv],
-  #                 period_effect_surv = period_effect_survival[1:nT_overall],
-  #                 f_age_foi = f_age_foi[1:n_agef],
-  #                 m_age_foi = m_age_foi[1:n_agem],
-  #                 age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-  #                 age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-  #                 period_lookup = period_lookup[1:n_period_lookup],
-  #                 f_period_foi = f_period_foi[1:n_period],
-  #                 m_period_foi = m_period_foi[1:n_period],
-  #                 space = space[sect_hunt_pos[i]]
-  #                 )
-  # }
+  for (i in 1:nInfHarvest) {
+    y_hunt_pos[i] ~ dInfHarvest(
+                  a = hunt_pos_ageweeks[i], #age (weeks) at harvest
+                  sex = hunt_pos_sex[i],
+                  age2date = hunt_pos_age2date[i],
+                  beta_sex = beta_sex,
+                  beta0_sus = beta0_sus,
+                  beta0_inf = beta0_inf,
+                  age_effect_surv = age_effect_survival[1:nT_age_surv],
+                  period_effect_surv = period_effect_survival[1:nT_overall],
+                  f_age_foi = f_age_foi[1:n_agef],
+                  m_age_foi = m_age_foi[1:n_agem],
+                  age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+                  age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+                  period_lookup = period_lookup[1:n_period_lookup],
+                  f_period_foi = f_period_foi[1:n_period],
+                  m_period_foi = m_period_foi[1:n_period],
+                  space = space[sect_hunt_pos[i]]
+                  )
+  }
 
 #######################################################################
 ###
@@ -170,25 +170,25 @@ modelcode <- nimbleCode({
 ###
 #######################################################################
 
-# for (i in 1:nSusHarvest) {
-#     y_hunt_neg[i] ~  dSusHarvest(
-#         a = hunt_neg_ageweeks[i],
-#         sex = hunt_neg_sex[i],
-#         age2date = hunt_neg_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival[1:nT_age_surv],
-#         period_effect_surv = period_effect_survival[1:nT_overall],
-#         f_age_foi = f_age_foi[1:n_agef],
-#         m_age_foi = m_age_foi[1:n_agem],
-#         age_lookup_f = age_lookup_f[1:n_age_lookup_f],
-#         age_lookup_m = age_lookup_m[1:n_age_lookup_m],
-#         period_lookup = period_lookup[1:n_period_lookup],
-#         f_period_foi = f_period_foi[1:n_period],
-#         m_period_foi = m_period_foi[1:n_period],
-#         space = space[sect_hunt_neg[i]]
-#         )
-# }
+for (i in 1:nSusHarvest) {
+    y_hunt_neg[i] ~  dSusHarvest(
+        a = hunt_neg_ageweeks[i],
+        sex = hunt_neg_sex[i],
+        age2date = hunt_neg_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival[1:nT_age_surv],
+        period_effect_surv = period_effect_survival[1:nT_overall],
+        f_age_foi = f_age_foi[1:n_agef],
+        m_age_foi = m_age_foi[1:n_agem],
+        age_lookup_f = age_lookup_f[1:n_age_lookup_f],
+        age_lookup_m = age_lookup_m[1:n_age_lookup_m],
+        period_lookup = period_lookup[1:n_period_lookup],
+        f_period_foi = f_period_foi[1:n_period],
+        m_period_foi = m_period_foi[1:n_period],
+        space = space[sect_hunt_neg[i]]
+        )
+}
 
 #######################################################################
 ###
@@ -844,7 +844,7 @@ endtime_rmodel_compile
 endtime_mcmc
 runtime
 
-sink("runtime_allsteps_noharvest.txt")
+sink("runtime_allsteps.txt")
 cat("Rmodel:\n")
 end_Rmodel
 cat("\nCompile Rmodel:\n")

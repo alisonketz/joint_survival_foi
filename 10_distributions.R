@@ -2360,14 +2360,14 @@ dNegCapPosMort <- nimble::nimbleFunction(
         lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_foi[(dn1 + 1):k])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
-                      exp(-sum(lam_inf[k:(r - 1)])) *
                       (1 - exp(-sum(lam_inf[k:(s - 1)])))
     }
     lik_temp[(s - 1)] <- lam_foi[(s - 1)] *
                         exp(-sum(lam_foi[(dn1 + 1):(s - 1)])) *
                         exp(-sum(lam_sus[(dn1 + 1):((s - 1) - 1)])) *
-                        ((1 - exp(-lam_inf[(s - 1)])) + lam_inf[(s - 1)])
-    lik <- (1 - exp(-sum(lam_sus[r:(s - 1)]))) *
+                        lam_inf[(s - 1)]
+    lik <- exp(-sum(lam_sus[e:dn1])) *
+           exp(-sum(lam_foi[1:dn1])) *
            sum(lik_temp[(dn1 + 1):(s - 1)])
 
     llik <- log(lik)

@@ -117,8 +117,8 @@ low_endlive <- d_surv[which(is.na(d_surv[,2])),9]
 nrow(d_surv[which(is.na(d_surv[,2])),])
 nrow(df_cap) - (nrow(d_cens) + nrow(d_mort))
 
-nT_period <- max(d_mort$sweek) + 1
-nT_period_month <- max(d_mort$smonth) + 1
+nT_period <- max(d_mort$sweek)
+nT_period_month <- max(d_mort$smonth)
 
 #Right censor these
 d_surv[which(is.na(d_surv[,2])),2] <- nT_period

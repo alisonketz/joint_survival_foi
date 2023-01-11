@@ -537,10 +537,10 @@ dSusCensNo <- nimble::nimbleFunction(
             rep(beta_sex * sex, n_indx_sus)
     )
     #survival hazard while infected
-    lam_inf[1:(r - 1)] <- exp(rep(beta0_inf, (r - 1)) +
-        age_effect_surv[1:(r - 1)] +
-        period_effect_surv[(1 + age2date):(r - 1 + age2date)] +
-        rep(beta_sex * sex, (r - 1))
+    lam_inf[e:(r - 1)] <- exp(rep(beta0_inf, (r - e)) +
+        age_effect_surv[e:(r - 1)] +
+        period_effect_surv[(e + age2date):(r - 1 + age2date)] +
+        rep(beta_sex * sex, (r - e))
         )
 
     #force of infection infection hazard
@@ -563,6 +563,7 @@ dSusCensNo <- nimble::nimbleFunction(
     for(k in (e + 2):(r - 1)){
         lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_sus[e:(k - 1)])) *
+                      exp(-sum(lam_foi[e:(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)]))
     }
     lik <- exp(-lam_sus[e]) *

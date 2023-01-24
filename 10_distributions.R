@@ -92,9 +92,9 @@ dInfHarvest <- nimble::nimbleFunction(
     lik_temp[1] <- lam_foi[1] * exp(-sum(lam_inf[1:(a - 1)]))
 
     for (k in 2:(a - 1)) {
-        lik_temp[j] <- lam_foi[k] *
+        lik_temp[k] <- lam_foi[k] *
                exp(-sum(lam_sus[1:(k - 1)] + lam_foi[1:(k - 1)])) *
-               exp(-sum(lam_inf[j:(a - 1)]))
+               exp(-sum(lam_inf[k:(a - 1)]))
     }
     lik_temp[a] <- lam_foi[a] * exp(-sum(lam_foi[1:(a - 1)] +
                                          lam_sus[1:(a - 1)]))

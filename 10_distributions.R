@@ -53,7 +53,6 @@ dInfHarvest <- nimble::nimbleFunction(
         log = double(0)
         ) {
 
-    llik <- 0 #intialize log-likelihood
     lam_foi <- nimNumeric(a)
     lam_sus <- nimNumeric(a - 1)
     lam_inf <- nimNumeric(a)
@@ -92,9 +91,9 @@ dInfHarvest <- nimble::nimbleFunction(
 
     lik_temp[1] <- lam_foi[1] * exp(-sum(lam_inf[1:(a - 1)]))
 
-    for (j in 2:(a - 1)) {
-        lik_temp[j] <- lam_foi[j] *
-               exp(-sum(lam_sus[1:(j - 1)] + lam_foi[1:(j - 1)])) *
+    for (k in 2:(a - 1)) {
+        lik_temp[j] <- lam_foi[k] *
+               exp(-sum(lam_sus[1:(k - 1)] + lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[j:(a - 1)]))
     }
     lik_temp[a] <- lam_foi[a] * exp(-sum(lam_foi[1:(a - 1)] +
@@ -249,8 +248,6 @@ dSusHarvest <- nimble::nimbleFunction(
     ###
     #######################################
 
-    # lik <- exp(-(sum(lam_temp[1:(a - 1)]) - lam_foi[a])) * lam_sus[a]
-
     lik <- exp(-(sum(lam_foi[1:(a - 1)] + 
                      lam_sus[1:(a - 1)]) - lam_foi[a])) * lam_sus[a]
 
@@ -318,7 +315,7 @@ assign('dSusHarvest', dSusHarvest, envir = .GlobalEnv)
 #         age2date = d_fit_hunt_neg$birthweek[i] - 1,
 #         beta_sex = beta_sex,
 #         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival,
+#         age_effect_surv = age_effect_survival_test,
 #         period_effect_surv = period_effect_survival_test,
 #         f_age_foi = f_age_foi,
 #         m_age_foi = m_age_foi,
@@ -2139,10 +2136,10 @@ dRecPosCens <- nimble::nimbleFunction(
     #############################################
 
     #survival hazard for susceptible deer
-    n_indx_sus <- length(e:dn)
-    lam_sus[e:dn] <- exp(rep(beta0_sus, n_indx_sus)  +
-                    age_effect_surv[e:dn] +
-                    period_effect_surv[(e + age2date):(dn + age2date)] +
+    n_indx_sus <- length(e:(dn - 1))
+    lam_sus[e:(dn - 1)] <- exp(rep(beta0_sus, n_indx_sus)  +
+                    age_effect_surv[e:(dn - 1)] +
+                    period_effect_surv[(e + age2date):((dn - 1) + age2date)] +
                     rep(beta_sex * sex, n_indx_sus))
     
     #survival hazard while infected
@@ -2155,11 +2152,11 @@ dRecPosCens <- nimble::nimbleFunction(
         )
 
     #force of infection infection hazard
-    lam_foi[1:dn] <- exp(rep(space, dn) +
-        sex * (f_age_foi[age_lookup_f[1:dn]] +
-            f_period_foi[period_lookup[(1 + age2date):(dn + age2date)]]) +
-        (1 - sex) * (m_age_foi[age_lookup_m[1:dn]] +
-            m_period_foi[period_lookup[(1 + age2date):(dn + age2date)]])
+    lam_foi[1:(dn - 1)] <- exp(rep(space, (dn - 1)) +
+        sex * (f_age_foi[age_lookup_f[1:(dn - 1)]] +
+            f_period_foi[period_lookup[(1 + age2date):((dn - 1) + age2date)]]) +
+        (1 - sex) * (m_age_foi[age_lookup_m[1:(dn - 1)]] +
+            m_period_foi[period_lookup[(1 + age2date):((dn - 1) + age2date)]])
         )
 
     #######################################
@@ -2170,7 +2167,7 @@ dRecPosCens <- nimble::nimbleFunction(
                     exp(-sum(lam_foi[1:dn1])) *
                     exp(-sum(lam_inf[(dn1 + 1):(r - 1)]))
 
-    for(k in (dn1 + 2):dn) {
+    for(k in (dn1 + 2):(dn - 1)) {
       lik_temp[k] <- lam_foi[k] *
                     exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                     exp(-sum(lam_foi[1:(k-1)])) *
@@ -2178,7 +2175,7 @@ dRecPosCens <- nimble::nimbleFunction(
     }
     lik <- exp(-sum(lam_sus[e:dn1])) *
            exp(-sum(lam_foi[1:dn1])) *
-           sum(lik_temp[(dn1 + 1):dn])
+           sum(lik_temp[(dn1 + 1):(dn - 1)])
     llik <- log(lik)
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood

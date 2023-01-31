@@ -533,7 +533,7 @@ dSusHarvest <- nimble::nimbleFunction(
 		indx_foi_age_m[1:a[i]] <- age_lookup_m[1:a[i]]
 		indx_foi_period[1:a[i]] <- period_lookup[(1 + age2date[i]):(a[i] + age2date[i])]
 
-		lam_foi[1:a[i]] <- exp(rep(space[space[sect[i]]], a[i]) +
+		lam_foi[1:a[i]] <- exp(rep(space[sect[i]], a[i]) +
 							sex[i] * (f_age_foi[indx_foi_age_f[1:a[i]]] +
 								f_period_foi[indx_foi_period[1:a[i]]]) +
 							(1 - sex[i]) * (m_age_foi[indx_foi_age_m[1:a[i]]] +

@@ -162,9 +162,9 @@ modelcode <- nimbleCode({
   # }
 
   y_hunt_pos[1:nInfHarvest] ~ dInfHarvest(n_samples = nInfHarvest,
-				          a = hunt_neg_ageweeks[1:nInfHarvest], #age (weeks) at harvest
-                  sex = hunt_neg_sex[1:nInfHarvest],
-                  age2date = hunt_neg_age2date[1:nInfHarvest],
+				          a = hunt_pos_ageweeks[1:nInfHarvest], #age (weeks) at harvest
+                  sex = hunt_pos_sex[1:nInfHarvest],
+                  age2date = hunt_pos_age2date[1:nInfHarvest],
                   beta_sex = beta_sex,
                   beta0_sus = beta0_sus,
                   beta0_inf = beta0_inf,
@@ -865,7 +865,7 @@ for (i in 1:10) {beepr::beep(1)}
 
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 1000,
+                  niter = 10,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,

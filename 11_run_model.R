@@ -316,6 +316,7 @@ for (i in 1:nSusMortTest) {
         r = sus_mort_posttest_right_age_r[i],
         s = sus_mort_posttest_right_age_s[i],
         sex = sus_mort_posttest_sex[i],
+        fast = sus_mort_posttest_fast[i],
         age2date = sus_mort_posttest_age2date[i],
         beta_sex = beta_sex,
         beta0_sus = beta0_sus,
@@ -421,6 +422,7 @@ for (i in 1:nIcapMort) {
         r = icap_mort_right_age_r[i],
         s = icap_mort_right_age_s[i],
         sex = icap_mort_sex[i],
+        fast = icap_mort_fast[i],
         age2date = icap_mort_age2date[i],
         beta_sex = beta_sex,
         beta0_sus = beta0_sus,
@@ -662,6 +664,7 @@ nimData <- list(Z_period = Z_period,
                 sus_mort_posttest_left_age_e = d_fit_sus_mort_posttest$left_age_e,
                 sus_mort_posttest_right_age_r = d_fit_sus_mort_posttest$right_age_r,
                 sus_mort_posttest_right_age_s = d_fit_sus_mort_posttest$right_age_s,
+                sus_mort_posttest_fast = d_fit_sus_mort_posttest$fast,
                 sus_mort_posttest_sex = d_fit_sus_mort_posttest$sex,
                 sus_mort_posttest_age2date = sus_mort_posttest_age2date,
                 y_sus_mort_postno = rep(1, nrow(d_fit_sus_mort_postno)),
@@ -681,6 +684,7 @@ nimData <- list(Z_period = Z_period,
                 icap_mort_right_age_r = d_fit_icap_mort$right_age_r,
                 icap_mort_right_age_s = d_fit_icap_mort$right_age_s,
                 icap_mort_sex = d_fit_icap_mort$sex,
+                icap_mort_fast = d_fit_icap_mort$fast,
                 icap_mort_age2date = icap_mort_age2date,
                 y_rec_neg_cens_posttest = rep(1, nrow(d_fit_rec_neg_cens_posttest)),
                 rec_neg_cens_posttest_left_age_e = d_fit_rec_neg_cens_posttest$left_age_e,
@@ -775,9 +779,9 @@ nimConsts <- list(nT_overall = nT_overall,
 #######################################
 initsFun <- function()list(
                           beta_sex = rnorm(1, -.5, .01),
-                          beta0_sus_temp = rnorm(1, -6, 0.0001),
+                          beta0_sus_temp = rnorm(1, -8, 0.0001),
                           sus_mix = 1,
-                          beta0_inf_temp = rnorm(1, -3, 0.0001),
+                          beta0_inf_temp = rnorm(1, -5, 0.0001),
                           inf_mix = 1,
                           b_age = rnorm(nknots_age) * 10^-4,
                           b_period = rnorm(nknots_period) * 10^-4,
@@ -854,11 +858,11 @@ nimMCMC <- buildMCMC(confMCMC)
 Cnim <- compileNimble(Rmodel)
 CnimMCMC <- compileNimble(nimMCMC,
                          project = Rmodel)
-for(i in 1:10) {beepr::beep(1)}
+for(i in 1:10){beepr::beep(1)}
 
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 1000,
+                  niter = 10,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,
@@ -868,21 +872,21 @@ mcmcout <- runMCMC(CnimMCMC,
 runtime <- difftime(Sys.time(),
                     starttime,
                     units = "min")
-for(i in 1:10){beepr::beep(1)}
+for (i in 1:10) {beepr::beep(1)}
 
 
-end_Rmodel
-endtime_rmodel_compile
-endtime_mcmc
+# end_Rmodel
+# endtime_rmodel_compile
+# endtime_mcmc
 runtime
 
 sink("runtime_allsteps.txt")
-cat("Rmodel:\n")
-end_Rmodel
-cat("\nCompile Rmodel:\n")
-endtime_rmodel_compile
-cat("\nCompile MCMC:\n")
-endtime_mcmc
+# cat("Rmodel:\n")
+# end_Rmodel
+# cat("\nCompile Rmodel:\n")
+# endtime_rmodel_compile
+# cat("\nCompile MCMC:\n")
+# endtime_mcmc
 cat("\nRun MCMC 1000 iter:\n")
 runtime
 sink()

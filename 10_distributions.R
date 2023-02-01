@@ -1612,7 +1612,7 @@ dIcapMort <- nimble::nimbleFunction(
     }
     lik <- (1 - fast) * (exp(-sum(lam_inf[e:(r - 1)])) *
            (1 - exp(-sum(lam_inf[r:(s - 1)]))) *
-           sum(lik_temp[1:(e - 1)])) + 
+           sum(lik_temp[1:(e - 1)])) +
            fast * ((1 - exp(-sum(lam_inf[r:(s - 1)]))) *
            sum(lik_temp[1:(e - 1)]))
     llik <- log(lik)

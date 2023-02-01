@@ -1062,10 +1062,10 @@ dSusMortTest <- nimble::nimbleFunction(
     #######################################
     ### calculating the joint likelihood
     #######################################
-    lik <- fast * ((1 - exp(-sum(lam_sus[r:(s - 1)]))) *
+    lik <- (1 - fast) * ((1 - exp(-sum(lam_sus[r:(s - 1)]))) *
                  exp(-sum(lam_sus[e:(r - 1)])) *
                  exp(-sum(lam_foi[1:(s - 1)]))) +
-            (1 - fast) * ((1 - exp(-sum(lam_sus[r:(s - 1)]))) *
+            fast * ((1 - exp(-sum(lam_sus[r:(s - 1)]))) *
             exp(-sum(lam_foi[1:(s - 1)])))
 
     llik <- log(lik)
@@ -1106,7 +1106,8 @@ nimble::registerDistributions(list(
 # ###for a user-defined distribution
 assign('dSusMortTest', dSusMortTest, envir = .GlobalEnv)
 
-i=15
+#112, 122, 280,372,423 are all producing logprob of datanode is -Inf errors
+i=112
 try(dSusMortTest(
         x = 1,
         e = d_fit_sus_mort_posttest$left_age_e[i],
@@ -1609,10 +1610,10 @@ dIcapMort <- nimble::nimbleFunction(
                exp(-sum(lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[k:(e - 1)]))
     }
-    lik <- fast * (exp(-sum(lam_inf[e:(r - 1)])) *
+    lik <- (1 - fast) * (exp(-sum(lam_inf[e:(r - 1)])) *
            (1 - exp(-sum(lam_inf[r:(s - 1)]))) *
            sum(lik_temp[1:(e - 1)])) + 
-           (1 - fast) * ((1 - exp(-sum(lam_inf[r:(s - 1)]))) *
+           fast * ((1 - exp(-sum(lam_inf[r:(s - 1)]))) *
            sum(lik_temp[1:(e - 1)]))
     llik <- log(lik)
     returnType(double(0))

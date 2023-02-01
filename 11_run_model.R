@@ -862,7 +862,7 @@ for(i in 1:10){beepr::beep(1)}
 
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 10,
+                  niter = 1000,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,
@@ -960,8 +960,8 @@ sink()
 
 save(mcmcout, file = "mcmcout.Rdata")
 save(runtime, file = "runtime.Rdata")
-save(endtime_rmodel_compile, file = "endtime_rmodel_compile.Rdata")
-save(endtime_mcmc, file = "endtime_mcmc.Rdata")
+# save(endtime_rmodel_compile, file = "endtime_rmodel_compile.Rdata")
+# save(endtime_mcmc, file = "endtime_mcmc.Rdata")
 
 #not calculating waic, because too many params would need to be traced
 # posteriorSamplesMatrix <- rbind(mcmcout[[1]], mcmcout[[2]], mcmcout[[3]])

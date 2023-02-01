@@ -337,12 +337,19 @@ indx_impute <- which(d_cap$ageatcap == "" | d_cap$ageatcap=="NOAGE")
 indx_impute_male <-indx_impute[which(d_cap$sex[indx_impute]=="Male")]
 indx_impute_female <-indx_impute[which(d_cap$sex[indx_impute]=="Female")]
 
+set.seed(1944)
 d_cap$ageatcap[indx_impute_female] <- nimble::rcat(length(indx_impute_female),prob=prob_age_female)+1.5
 d_cap$ageatcap[indx_impute_male] <- nimble::rcat(length(indx_impute_male),prob=prob_age_male)+1.5
+set.seed(1946)
+
 
 #converting age at capture to numeric
 d_cap$ageatcap <- as.numeric(d_cap$ageatcap)
+# d_cap$ageatcap[indx_impute_female]
+# d_surv[d_surv$lowtag %in% d_cap$lowtag[indx_impute_female],]
+# d_surv$lowtag[d_surv$lowtag %in% d_cap$lowtag[indx_impute_female]]
 
+# d_cap[indx_impute_female,c(4,5,27,42,116)]
 #calculating age at capture in months
 # for(j in 2005:2017){cat(week(paste(j,"-05-21",sep="")),"\n")}
 #21 week of year

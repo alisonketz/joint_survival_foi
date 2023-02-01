@@ -214,9 +214,9 @@ dInfHarvest <- nimble::nimbleFunction(
         log = double(0)
         ) {
 
-	# start the loop through individuals	
+	# start the loop through individuals
 	sumllik <- 0
-	for(i in 1:n_samples){
+	for(i in 1:n_samples) {
 		#intitialize vectors
 		lam_foi <- nimNumeric(a[i])
 		lam_sus <- nimNumeric(a[i] - 1)
@@ -495,7 +495,7 @@ dSusHarvest <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
         x = double(1),
-        n_samples = integer(0), # number of samples in dataset
+        n_samples = double(0), # number of samples in dataset
 		a = double(1), #age (weeks) at harvest
         sex = double(1),
         age2date = double(1),
@@ -517,10 +517,11 @@ dSusHarvest <- nimble::nimbleFunction(
 
 	# start the loop through individuals	
 	sumllik <- 0
+    # sumlliktemp <- nimNumeric(n_samples)
 	for(i in 1:n_samples){
 		#intitialize vectors
 		lam_foi <- nimNumeric(a[i])
-		lam_sus <- nimNumeric(a[i] - 1)
+		lam_sus <- nimNumeric(a[i])
 		lik_temp <- nimNumeric(a[i])
 		indx_foi_age_f <- nimNumeric(a[i])
 		indx_foi_age_m <- nimNumeric(a[i])
@@ -545,7 +546,7 @@ dSusHarvest <- nimble::nimbleFunction(
 								period_effect_surv[(1 + age2date[i]):(a[i] + age2date[i])] +
 								rep(beta_sex * sex[i], a[i])
 								)
-	
+
 		#######################################
 		###
 		### calculating the joint likelihood
@@ -556,7 +557,9 @@ dSusHarvest <- nimble::nimbleFunction(
 						lam_sus[1:(a[i] - 1)]) - lam_foi[a[i]])) * lam_sus[a[i]]
 	
 		sumllik <- sumllik + log(lik)
+        # sumlliktemp[i] <- sumllik + log(lik)
 	}
+   
 	returnType(double(0))
 	if(log) return(sumllik) else return(exp(sumllik))    ## return log-likelihood
   })
@@ -567,7 +570,7 @@ nimble::registerDistributions(list(
         BUGSdist = 'dSusHarvest(n_samples,a,sex,age2date,beta_sex,beta0_sus,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space,sect)',
         types = c("value=double(1)",
 				  "a = double(1)",
-				  "n_samples = integer(0)",
+				  "n_samples = double(0)",
                   "sex = double(1)",
                   "age2date = double(1)",
                   "beta_sex = double(0)",
@@ -589,42 +592,29 @@ nimble::registerDistributions(list(
     )
 ))
 
-# for a user-defined distribution
 assign('dSusHarvest', dSusHarvest, envir = .GlobalEnv)
 
-# start <- Sys.time()
-# test <- dSusHarvest(
-#         x = rep(1,nrow(d_fit_hunt_neg)),
-#		  n_samples = nrow(d_fit_hunt_neg),
-#         a = d_fit_hunt_neg$ageweeks, #age (weeks) at harvest
-#         sex = d_fit_hunt_neg$sex,
-#         age2date = d_fit_hunt_neg$birthweek-1,
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_f,
-#         age_lookup_m = age_lookup_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = rep(0,nrow(d_fit_hunt_neg)),
-#         log = TRUE
-#         )
-# (end<- Sys.time()-start)
-# test
-
-
-
-
-
-
-
-
-
-
+ dSusHarvest(
+        x = rep(1,nrow(d_fit_hunt_neg)),
+		n_samples = nrow(d_fit_hunt_neg),
+        a = d_fit_hunt_neg$ageweeks, #age (weeks) at harvest
+        sex = d_fit_hunt_neg$sex,
+        age2date = d_fit_hunt_neg$birthweek-1,
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_f,
+        age_lookup_m = age_lookup_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = rep(0,n_sect),
+        sect = sect_hunt_neg,
+        log = TRUE
+        )
 
 #######################################################################
 #######################################################################

@@ -851,21 +851,14 @@ confMCMC <- configureMCMC(Rmodel,
                          # enableWAIC = TRUE,
                          useConjugacy = FALSE)
 nimMCMC <- buildMCMC(confMCMC)
-
-start_compile_rmodel <- Sys.time()
 Cnim <- compileNimble(Rmodel)
-endtime_rmodel_compile <- Sys.time() - start_compile_rmodel
-for(i in 1:10) {beepr::beep(1)}
-
-start_compile_mcmc <- Sys.time()
 CnimMCMC <- compileNimble(nimMCMC,
                          project = Rmodel)
-endtime_mcmc <- Sys.time() - start_compile_mcmc
-for (i in 1:10) {beepr::beep(1)}
+for(i in 1:10) {beepr::beep(1)}
 
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 10,
+                  niter = 1000,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,

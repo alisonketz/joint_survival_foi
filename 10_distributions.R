@@ -1015,6 +1015,7 @@ dSusMortTest <- nimble::nimbleFunction(
         r = integer(0), #r, age of last known alive
         s = integer(0), #s, age of known mortality
         sex = integer(0),
+        fast = integer(0),
         age2date = integer(0),
         beta_sex = double(0),
         beta0_sus = double(0),
@@ -1061,9 +1062,11 @@ dSusMortTest <- nimble::nimbleFunction(
     #######################################
     ### calculating the joint likelihood
     #######################################
-    lik <- (1 - exp(-sum(lam_sus[r:(s - 1)]))) *
-            exp(-sum(lam_sus[e:(r - 1)])) *
-            exp(-sum(lam_foi[1:(s - 1)]))
+    lik <- fast * ((1 - exp(-sum(lam_sus[r:(s - 1)]))) *
+                 exp(-sum(lam_sus[e:(r - 1)])) *
+                 exp(-sum(lam_foi[1:(s - 1)]))) +
+            (1 - fast) * ((1 - exp(-sum(lam_sus[r:(s - 1)]))) *
+            exp(-sum(lam_foi[1:(s - 1)])))
 
     llik <- log(lik)
 
@@ -1074,11 +1077,12 @@ dSusMortTest <- nimble::nimbleFunction(
 
 nimble::registerDistributions(list(
     dSusMortTest = list(
-        BUGSdist = 'dSusMortTest(e,r,s,sex,age2date,beta_sex,beta0_sus,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        BUGSdist = 'dSusMortTest(e,r,s,sex,fast,age2date,beta_sex,beta0_sus,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("e = integer(0)",
                   "r = integer(0)",
                   "s = integer(0)",
                   "sex = integer(0)",
+                  "fast = integer(0)",
                   "age2date = integer(0)",
                   "beta_sex = double(0)",
                   "beta0_sus = double(0)",
@@ -1102,28 +1106,29 @@ nimble::registerDistributions(list(
 # ###for a user-defined distribution
 assign('dSusMortTest', dSusMortTest, envir = .GlobalEnv)
 
-# i=140
-# try(dSusMortTest(
-#         x = 1,
-#         e = d_fit_sus_mort_posttest$left_age_e[i],
-#         r = d_fit_sus_mort_posttest$right_age_r[i],
-#         s = d_fit_sus_mort_posttest$right_age_s[i],
-#         sex = d_fit_sus_mort_posttest$sex[i],
-#         age2date = sus_mort_posttest_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         ))
+i=15
+try(dSusMortTest(
+        x = 1,
+        e = d_fit_sus_mort_posttest$left_age_e[i],
+        r = d_fit_sus_mort_posttest$right_age_r[i],
+        s = d_fit_sus_mort_posttest$right_age_s[i],
+        sex = d_fit_sus_mort_posttest$sex[i],
+        fast = d_fit_sus_mort_posttest$fast[i],
+        age2date = sus_mort_posttest_age2date[i],
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = 0,
+        log = TRUE
+        ))
 
 # warning: logProb of data node y_sus_mort_posttest[112]: logProb is -Inf.
 # warning: logProb of data node y_sus_mort_posttest[122]: logProb is -Inf.
@@ -1542,6 +1547,7 @@ dIcapMort <- nimble::nimbleFunction(
         r = integer(0), #r, age of last known alive
         s = integer(0), #s, age of known mortality
         sex = integer(0),
+        fast = integer(0),
         age2date = integer(0),
         beta_sex = double(0),
         beta0_sus = double(0),
@@ -1603,9 +1609,11 @@ dIcapMort <- nimble::nimbleFunction(
                exp(-sum(lam_foi[1:(k - 1)])) *
                exp(-sum(lam_inf[k:(e - 1)]))
     }
-    lik <- exp(-sum(lam_inf[e:(r - 1)])) *
+    lik <- fast * (exp(-sum(lam_inf[e:(r - 1)])) *
            (1 - exp(-sum(lam_inf[r:(s - 1)]))) *
-           sum(lik_temp[1:(e - 1)])
+           sum(lik_temp[1:(e - 1)])) + 
+           (1 - fast) * ((1 - exp(-sum(lam_inf[r:(s - 1)]))) *
+           sum(lik_temp[1:(e - 1)]))
     llik <- log(lik)
     returnType(double(0))
     if(log) return(llik) else return(exp(llik))    ## return log-likelihood
@@ -1614,11 +1622,12 @@ dIcapMort <- nimble::nimbleFunction(
 
 nimble::registerDistributions(list(
     dIcapMort = list(
-        BUGSdist = 'dIcapMort(e,r,s,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
+        BUGSdist = 'dIcapMort(e,r,s,sex,fast,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
         types = c("e = integer(0)",
                     "r = integer(0)",
                     "s = integer(0)",
                     "sex = integer(0)",
+                    "fast = integer(0)",
                     "age2date = integer(0)",
                     "beta_sex = double(0)",
                     "beta0_sus = double(0)",

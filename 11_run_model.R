@@ -779,9 +779,9 @@ nimConsts <- list(nT_overall = nT_overall,
 #######################################
 initsFun <- function()list(
                           beta_sex = rnorm(1, -.5, .01),
-                          beta0_sus_temp = rnorm(1, -8, 0.0001),
+                          beta0_sus_temp = rnorm(1, -5.5, 0.0001),
                           sus_mix = 1,
-                          beta0_inf_temp = rnorm(1, -5, 0.0001),
+                          beta0_inf_temp = rnorm(1, -4, 0.0001),
                           inf_mix = 1,
                           b_age = rnorm(nknots_age) * 10^-4,
                           b_period = rnorm(nknots_period) * 10^-4,
@@ -805,7 +805,7 @@ initsFun <- function()list(
                           )
 nimInits <- initsFun()
 
-start_Rmodel <- Sys.time()
+# start_Rmodel <- Sys.time()
 Rmodel <- nimbleModel(code = modelcode,
                       constants = nimConsts,
                       data = nimData,
@@ -813,8 +813,8 @@ Rmodel <- nimbleModel(code = modelcode,
                       calculate = FALSE,
                       check = FALSE
                       )
-end_Rmodel <- Sys.time() - start_Rmodel
-Rmodel$initializeInfo()
+# end_Rmodel <- Sys.time() - start_Rmodel
+# Rmodel$initializeInfo()
 for(i in 1:10){beepr::beep(1)}
 
 #######################################
@@ -859,7 +859,7 @@ Cnim <- compileNimble(Rmodel)
 CnimMCMC <- compileNimble(nimMCMC,
                          project = Rmodel)
 for(i in 1:10){beepr::beep(1)}
-
+set.seed(7654321)
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
                   niter = 1000,

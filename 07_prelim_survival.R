@@ -44,7 +44,7 @@ nT_age_surv <- max(d_surv$right_age_s, na.rm = TRUE) - 1
 # nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE) - 1
 # nT_period_surv <- max(d_surv$right_period_s, na.rm = TRUE)
 
-nT_period_surv <- nT_overall - nT_period_presurv + 1
+nT_period_surv <- nT_overall - nT_period_presurv
 
 
 ###############################

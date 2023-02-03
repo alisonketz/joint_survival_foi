@@ -639,8 +639,8 @@ nimData <- list(Z_period = Z_period,
                 num_period = num_period,
                 adj_period = adj_period,
                 weights_period = weights_period,
-                age_lookup_f = age_lookup_f,
-                age_lookup_m = age_lookup_m,
+                age_lookup_f = age_lookup_col_f,
+                age_lookup_m = age_lookup_col_m,
                 period_effect_survival = period_effect_survival,
                 y_hunt_pos = rep(1, nrow(d_fit_hunt_pos)),
                 hunt_pos_ageweeks = d_fit_hunt_pos$ageweeks,
@@ -742,8 +742,8 @@ nimConsts <- list(nT_overall = nT_overall,
                   n_sect = n_sect,
                   # scale = scale,
                   space = rep(0, n_sect),
-                  n_age_lookup_f = length(age_lookup_f),
-                  n_age_lookup_m = length(age_lookup_m),
+                  n_age_lookup_f = length(age_lookup_col_f),
+                  n_age_lookup_m = length(age_lookup_col_m),
                   period_lookup = period_lookup,
                   nInfHarvest = nrow(d_fit_hunt_pos),
                   nSusHarvest = nrow(d_fit_hunt_neg),
@@ -859,10 +859,11 @@ Cnim <- compileNimble(Rmodel)
 CnimMCMC <- compileNimble(nimMCMC,
                          project = Rmodel)
 for(i in 1:10){beepr::beep(1)}
+
 set.seed(7654321)
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 1000,
+                  niter = 10,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,
@@ -887,8 +888,8 @@ sink("runtime_allsteps.txt")
 # endtime_rmodel_compile
 # cat("\nCompile MCMC:\n")
 # endtime_mcmc
-cat("\nRun MCMC 1000 iter:\n")
-runtime
+cat("\nRun MCMC 1000 iter: ")
+cat(runtime)
 sink()
 
 # reps  <- 2000

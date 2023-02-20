@@ -572,17 +572,19 @@ d_mort$mortalertdate <- as.Date(d_mort$mortalertdate, format = "%Y-%m-%d")
 d_mort$collarfound <- as.Date(d_mort$collarfound, format = "%Y-%m-%d")
 d_cens$censordate <- as.Date(d_cens$censordate , format = "%Y-%m-%d")
 
-#which should these be censored and which should be morts?
+# lowtags that should be censored and lowtags that should be morts
+# which should these be censored and which should be morts?
 # d_mort[d_mort$lowtag %in% d_cens$lowtag,]
-low_cens_inmort <- d_cens$lowtag[d_cens$lowtag %in% d_mort$lowtag ]
+
+low_cens_inmort <- d_cens$lowtag[d_cens$lowtag %in% d_mort$lowtag]
 
 mortdate <- list()
-for(i in 1:nrow(d_mort)){
+for(i in 1:nrow(d_mort)) {
   mortdate[[i]] <- c(d_mort$estmortdate[i],
       d_mort$mortalertdate[i],
       d_mort$collarfound[i])}
-temp<- lapply(mortdate, min, na.rm=TRUE)
-d_mort$mortdate <- Reduce(c,temp)
+temp <- lapply(mortdate, min, na.rm=TRUE)
+d_mort$mortdate <- Reduce(c, temp)
 
 #checking that the deer that are in both the censor and mortality 
 # sheets have the censor date before the mortality date

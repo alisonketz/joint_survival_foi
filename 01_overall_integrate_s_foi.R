@@ -55,7 +55,6 @@ source("summarize.R")
 source("02_load_clean_data_foi.R")
 source("03_load_clean_data_survival.R")
 
-
 ###############################################################
 ### Load/clean Spatially referenced data
 ###############################################################
@@ -85,6 +84,7 @@ source("09_prelim_collar_foi.R")
 ###########################################################
 ### Run model
 ###########################################################
+
 source("10_distributions_check.R")
 source("10_distributions.R")
 

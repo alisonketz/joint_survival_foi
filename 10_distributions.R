@@ -192,7 +192,7 @@
 dInfHarvest <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
-        x = double(1),
+        x = double(0),
         n_samples = integer(0), # number of samples in dataset
 		a = double(1), #age (weeks) at harvest
         sex = double(1),
@@ -274,7 +274,7 @@ dInfHarvest <- nimble::nimbleFunction(
 nimble::registerDistributions(list(
     dInfHarvest = list(
         BUGSdist = 'dInfHarvest(n_samples,a,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space,sect)',
-        types = c("value=double(1)",
+        types = c("value=double(0)",
 					"n_samples = integer(0)",
 				    "a = double(1)",
                     "sex = double(1)",
@@ -494,7 +494,7 @@ assign('dInfHarvest', dInfHarvest, envir = .GlobalEnv)
 dSusHarvest <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
-        x = double(1),
+        x = double(0),
         n_samples = double(0), # number of samples in dataset
 		a = double(1), #age (weeks) at harvest
         sex = double(1),
@@ -568,7 +568,7 @@ dSusHarvest <- nimble::nimbleFunction(
 nimble::registerDistributions(list(
     dSusHarvest = list(
         BUGSdist = 'dSusHarvest(n_samples,a,sex,age2date,beta_sex,beta0_sus,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space,sect)',
-        types = c("value=double(1)",
+        types = c("value=double(0)",
 				  "a = double(1)",
 				  "n_samples = double(0)",
                   "sex = double(1)",
@@ -776,7 +776,7 @@ assign('dSusCensTest', dSusCensTest, envir = .GlobalEnv)
 dSusCensNo <- nimble::nimbleFunction(
     run = function(
        ### argument type declarations
-        x = double(1),
+        x = double(0),
         n_samples = integer(0), # number of samples in dataset
         e = double(1), #e, age of entry
         r = double(1), #r, age of last known alive
@@ -868,7 +868,7 @@ dSusCensNo <- nimble::nimbleFunction(
 nimble::registerDistributions(list(
     dSusCensNo = list(
         BUGSdist = 'dSusCensNo(n_samples,e,r,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space,sect)',
-        types = c("value=double(1)",
+        types = c("value=double(0)",
 				  "n_samples = integer(0)",
                   "e = double(1)",
                   "r = double(1)",
@@ -967,7 +967,7 @@ assign('dSusCensNo', dSusCensNo, envir = .GlobalEnv)
 dSusMortTest <- nimble::nimbleFunction(
     run = function(
        ### argument type declarations
-        x = double(1),
+        x = double(0),
         n_samples = integer(0), # number of samples in dataset
         e = double(1), #e, age of entry
         r = double(1), #r, age of last known alive
@@ -1051,7 +1051,7 @@ dSusMortTest <- nimble::nimbleFunction(
 nimble::registerDistributions(list(
     dSusMortTest = list(
         BUGSdist = 'dSusMortTest(n_samples,e,r,s,sex,fast,age2date,beta_sex,beta0_sus,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space,sect)',
-        types = c("value=double(1)",
+        types = c("value=double(0)",
 				  "a = double(1)",
 				  "n_samples = integer(0)",
                   "e = double(1)",

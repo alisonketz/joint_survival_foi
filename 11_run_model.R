@@ -161,7 +161,7 @@ modelcode <- nimbleCode({
   #                 )
   # }
 
-  y_hunt_pos[1:nInfHarvest] ~ dInfHarvest(n_samples = nInfHarvest,
+  y_hunt_pos ~ dInfHarvest(n_samples = nInfHarvest,
 				          a = hunt_pos_ageweeks[1:nInfHarvest], #age (weeks) at harvest
                   sex = hunt_pos_sex[1:nInfHarvest],
                   age2date = hunt_pos_age2date[1:nInfHarvest],
@@ -210,7 +210,7 @@ modelcode <- nimbleCode({
 #         )
 # }
 
-  y_hunt_neg[1:nSusHarvest] ~ dSusHarvest(n_samples = nSusHarvest,
+  y_hunt_neg ~ dSusHarvest(n_samples = nSusHarvest,
 				          a = hunt_neg_ageweeks[1:nSusHarvest], #age (weeks) at harvest
                   sex = hunt_neg_sex[1:nSusHarvest],
                   age2date = hunt_neg_age2date[1:nSusHarvest],
@@ -298,7 +298,7 @@ for (i in 1:nSusCensTest) {
 #         )
 #   }
 
-  y_sus_cens_postno[1:nSusCensNo] ~ dSusCensNo(
+  y_sus_cens_postno ~ dSusCensNo(
         n_samples = nSusCensNo,
         e = sus_cens_postno_left_age_e[1:nSusCensNo],
         r = sus_cens_postno_right_age_r[1:nSusCensNo],
@@ -359,7 +359,7 @@ for (i in 1:nSusCensTest) {
 #         )
 #   }
 
-  y_sus_mort_posttest[1:nSusMortTest] ~ dSusMortTest(
+  y_sus_mort_posttest ~ dSusMortTest(
       n_samples = nSusMortTest,
       e = sus_mort_posttest_left_age_e[1:nSusMortTest],
       r = sus_mort_posttest_right_age_r[1:nSusMortTest],
@@ -692,11 +692,11 @@ nimData <- list(Z_period = Z_period,
                 age_lookup_f = age_lookup_col_f,
                 age_lookup_m = age_lookup_col_m,
                 period_effect_survival = period_effect_survival,
-                y_hunt_pos = rep(1, nrow(d_fit_hunt_pos)),
+                y_hunt_pos = 1,#rep(1, nrow(d_fit_hunt_pos)),
                 hunt_pos_ageweeks = d_fit_hunt_pos$ageweeks,
                 hunt_pos_sex = d_fit_hunt_pos$sex,
                 hunt_pos_age2date = d_fit_hunt_pos$birthweek - 1,
-                y_hunt_neg = rep(1, nrow(d_fit_hunt_neg)),
+                y_hunt_neg = 1,#rep(1, nrow(d_fit_hunt_neg)),
                 hunt_neg_ageweeks = d_fit_hunt_neg$ageweeks,
                 hunt_neg_sex = d_fit_hunt_neg$sex,
                 hunt_neg_age2date = d_fit_hunt_neg$birthweek - 1,
@@ -705,12 +705,12 @@ nimData <- list(Z_period = Z_period,
                 sus_cens_posttest_right_age_r = d_fit_sus_cens_posttest$right_age_r,
                 sus_cens_posttest_sex = d_fit_sus_cens_posttest$sex,
                 sus_cens_posttest_age2date = sus_cens_posttest_age2date,
-                y_sus_cens_postno = rep(1, nrow(d_fit_sus_cens_postno) + nrow(d_fit_endlive)),
+                y_sus_cens_postno = 1,#rep(1, nrow(d_fit_sus_cens_postno) + nrow(d_fit_endlive)),
                 sus_cens_postno_left_age_e = c(d_fit_sus_cens_postno$left_age_e, d_fit_endlive$left_age_e),
                 sus_cens_postno_right_age_r = c(d_fit_sus_cens_postno$right_age_r, d_fit_endlive$right_age_r),
                 sus_cens_postno_sex = c(d_fit_sus_cens_postno$sex, d_fit_endlive$sex),
                 sus_cens_postno_age2date = c(sus_cens_postno_age2date, endlive_age2date),
-                y_sus_mort_posttest = rep(1, nrow(d_fit_sus_mort_posttest)),
+                y_sus_mort_posttest = 1,#rep(1, nrow(d_fit_sus_mort_posttest)),
                 sus_mort_posttest_left_age_e = d_fit_sus_mort_posttest$left_age_e,
                 sus_mort_posttest_right_age_r = d_fit_sus_mort_posttest$right_age_r,
                 sus_mort_posttest_right_age_s = d_fit_sus_mort_posttest$right_age_s,
@@ -913,7 +913,7 @@ for(i in 1:10){beepr::beep(1)}
 set.seed(7654321)
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 1000,
+                  niter = 10,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,

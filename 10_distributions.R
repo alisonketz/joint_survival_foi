@@ -302,30 +302,31 @@ nimble::registerDistributions(list(
 # for a user-defined distribution
 assign('dInfHarvest', dInfHarvest, envir = .GlobalEnv)
 
-# start <- Sys.time()
-# test <- dInfHarvest(
-#         x = rep(1,nrow(d_fit_hunt_pos)),
-#		  n_samples = nrow(d_fit_hunt_pos),
-#         a = d_fit_hunt_pos$ageweeks, #age (weeks) at harvest
-#         sex = d_fit_hunt_pos$sex,
-#         age2date = d_fit_hunt_pos$birthweek-1,
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_f,
-#         age_lookup_m = age_lookup_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = rep(0,nrow(d_fit_hunt_pos)),
-#         log = TRUE
-#         )
-# (end<- Sys.time()-start)
-# test
+start <- Sys.time()
+test <- dInfHarvest(
+        x = rep(1,nrow(d_fit_hunt_pos)),
+		  n_samples = nrow(d_fit_hunt_pos),
+        a = d_fit_hunt_pos$ageweeks, #age (weeks) at harvest
+        sex = d_fit_hunt_pos$sex,
+        age2date = d_fit_hunt_pos$birthweek-1,
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_f,
+        age_lookup_m = age_lookup_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = rep(0,nrow(d_fit_hunt_pos)),
+        sect = d_fit_hunt_pos$sect,
+        log = TRUE
+        )
+(end<- Sys.time()-start)
+test
 
 
 
@@ -848,8 +849,8 @@ dSusCensNo <- nimble::nimbleFunction(
 	    if(r[i]-e[i]>2){
 			for(k in (e[i] + 2):(r[i] - 1)){
 				lik_temp[k] <- lam_foi[k] *
-							exp(-sum(lam_sus[e[i]:(k - 1)])) *
-							exp(-sum(lam_foi[e[i]:(k - 1)])) *
+							exp(-sum(lam_sus[(e[i] + 1):(k - 1)])) *
+							exp(-sum(lam_foi[(e[i] + 1):(k - 1)])) *
 							exp(-sum(lam_inf[k:(r[i] - 1)]))
 			}
 		}
@@ -1187,21 +1188,21 @@ dSusMortNoTest <- nimble::nimbleFunction(
                       exp(-sum(lam_inf[(dn1 + 1):(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
 
-    for (k in (dn1 + 2):(r - 2)) {
+    if((r - dn1)>3){for (k in (dn1 + 2):(r - 2)) {
         lik_temp[k] <- lam_foi[k] *
-                      exp(-sum(lam_foi[(dn1 + 1):k])) *
+                      exp(-sum(lam_foi[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
-    }
+    }}
     for (k in (r - 1):(s - 2)) {
         lik_temp[k] <- lam_foi[k] *
-                      exp(-sum(lam_foi[(dn1 + 1):k])) *
+                      exp(-sum(lam_foi[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                       (1 - exp(-sum(lam_inf[k:(s - 1)])))
     }
     lik_temp[(s - 1)] <- lam_foi[(s - 1)] *
-                        exp(-sum(lam_foi[(dn1 + 1):(s - 1)])) *
+                        exp(-sum(lam_foi[(dn1 + 1):((s - 1) - 1)])) *
                         exp(-sum(lam_sus[(dn1 + 1):((s - 1) - 1)])) *
                         (lam_inf[(s - 1)])
     lik <- exp(-sum(lam_sus[e:dn1])) *

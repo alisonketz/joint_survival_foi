@@ -1188,13 +1188,15 @@ dSusMortNoTest <- nimble::nimbleFunction(
                       exp(-sum(lam_inf[(dn1 + 1):(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
 
-    if((r - dn1)>3){for (k in (dn1 + 2):(r - 2)) {
-        lik_temp[k] <- lam_foi[k] *
+    if((r - dn1)>3){
+        for (k in (dn1 + 2):(r - 2)) {
+            lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_foi[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
                       exp(-sum(lam_inf[k:(r - 1)])) *
                       (1 - exp(-sum(lam_inf[r:(s - 1)])))
-    }}
+        }
+    }
     for (k in (r - 1):(s - 2)) {
         lik_temp[k] <- lam_foi[k] *
                       exp(-sum(lam_foi[(dn1 + 1):(k - 1)])) *

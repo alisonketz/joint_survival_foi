@@ -627,8 +627,6 @@ assign('dSusHarvest', dSusHarvest, envir = .GlobalEnv)
 #######################################################################
 #######################################################################
 
-
-
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
@@ -801,7 +799,7 @@ dSusCensNo <- nimble::nimbleFunction(
         ) {
 
     sumllik <- 0 #intialize log-likelihood
-	for(i in 1:n_samples){
+	for(i in 1:n_samples) {
 		lam_foi <- nimNumeric(r[i] - 1)
 		lam_sus <- nimNumeric(r[i] - 1)
 		lam_inf <- nimNumeric(r[i] - 1)
@@ -1080,7 +1078,6 @@ nimble::registerDistributions(list(
     )
 ))
 
-
 # ###for a user-defined distribution
 assign('dSusMortTest', dSusMortTest, envir = .GlobalEnv)
 
@@ -1123,7 +1120,6 @@ assign('dSusMortTest', dSusMortTest, envir = .GlobalEnv)
 ###   Overleaf Equation (13)
 ###
 #######################################################################
-
 
 dSusMortNoTest <- nimble::nimbleFunction(
     run = function(
@@ -1276,8 +1272,8 @@ assign('dSusMortNoTest', dSusMortNoTest, envir = .GlobalEnv)
 #         log = TRUE
 #         )
 
-# test=c()
-# for(i in 1:nrow(d_fit_sus_mort_postno)){
+# test = c()
+# for(i in 1:nrow(d_fit_sus_mort_postno)) {
 #     test[i] <-  dSusMortNoTest(
 #         x = 1,
 #         e = d_fit_sus_mort_postno$left_age_e[i],
@@ -1418,7 +1414,7 @@ nimble::registerDistributions(list(
 # for a user-defined distribution
 assign('dIcapCens', dIcapCens, envir = .GlobalEnv)
 
-i=1
+i <- 1
 dIcapCens(
         x = 1,
         e = d_fit_icap_cens$left_age_e[i],
@@ -1465,13 +1461,6 @@ dIcapCens(
 #         )
 # }
 # test
-
-#strange error after it compiles, when I try to run MCMC sampler
-# Run-time size error: expected Interm_1709 - 1 + 1 == Interm_1711 - Interm_1710 + 1
-# Run-time size error: expected Interm_1711 - Interm_1710 + 1 == (1) * (Interm_1712) * (1)
-# Run-time size error: expected Interm_1709 - 1 + 1 == Interm_1711 - Interm_1710 + 1
-# Run-time size error: expected Interm_1711 - Interm_1710 + 1 == (1) * (Interm_1712) * (1)
-
 
 #######################################################################
 ###
@@ -1644,7 +1633,7 @@ assign('dIcapMort', dIcapMort, envir = .GlobalEnv)
 #         m_period_foi = m_period_foi,
 #         space = 0,
 #         log = TRUE
-#         )       
+#         )
 #  }
 # test
 
@@ -1987,14 +1976,12 @@ assign('dRecNegCensPostNo', dRecNegCensPostNo, envir = .GlobalEnv)
 #  }
 # test
 
-
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
 ###   uninfected deer that were test neg at capture,
 ###   then test negative at recap,
 ###   that die
-###
 ###
 ###   d_fit_rec_neg_mort
 ###

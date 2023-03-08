@@ -896,59 +896,59 @@ nimble::registerDistributions(list(
 ###for a user-defined distribution
 assign('dSusCensNo', dSusCensNo, envir = .GlobalEnv)
 
-# start <- Sys.time()
-# test <- dSusCensNo(
-#         x = rep(1,nrow(d_fit_sus_cens_postno)),
-# 		  n_samples = nrow(d_fit_sus_cens_postno),
-#         e = d_fit_sus_cens_postno$left_age_e,
-#         r = d_fit_sus_cens_postno$right_age_r,
-#         sex = d_fit_sus_cens_postno$sex,
-#         age2date = sus_cens_postno_age2date,
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = rep(0,n_sect),
-# 		  sect = d_fit_sus_cens_postno$sect,
-#         log = TRUE
-#         )
-# (end<- Sys.time()-start)
-# test
+start <- Sys.time()
+test <- dSusCensNo(
+        x = rep(1,nrow(d_fit_sus_cens_postno)),
+		  n_samples = nrow(d_fit_sus_cens_postno),
+        e = d_fit_sus_cens_postno$left_age_e,
+        r = d_fit_sus_cens_postno$right_age_r,
+        sex = d_fit_sus_cens_postno$sex,
+        age2date = sus_cens_postno_age2date,
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = rep(0,n_sect),
+		  sect = d_fit_sus_cens_postno$sect,
+        log = TRUE
+        )
+(end<- Sys.time()-start)
+test
 
-# start <- Sys.time()
-# test2 <- dSusCensNo(
-#         x = rep(1,nrow(d_fit_endlive)),
-# 		  n_samples = nrow(d_fit_endlive),
-#         e = d_fit_endlive$left_age_e,
-#         r = d_fit_endlive$right_age_r,
-#         sex = d_fit_endlive$sex,
-#         age2date = endlive_age2date,
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = rep(0,n_sect),
-# 		  sect = d_fit_endlive$sect,
-#         log = TRUE
-#         )
-# (end<- Sys.time()-start)
-# test2
+start <- Sys.time()
+test2 <- dSusCensNo(
+        x = rep(1,nrow(d_fit_endlive)),
+		  n_samples = nrow(d_fit_endlive),
+        e = d_fit_endlive$left_age_e,
+        r = d_fit_endlive$right_age_r,
+        sex = d_fit_endlive$sex,
+        age2date = endlive_age2date,
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+        space = rep(0,n_sect),
+		  sect = d_fit_endlive$sect,
+        log = TRUE
+        )
+(end<- Sys.time()-start)
+test2
 
 #######################################################################
 ###
@@ -2510,14 +2510,15 @@ assign('dRecPosCens', dRecPosCens, envir = .GlobalEnv)
 dNegCapPosMort <- nimble::nimbleFunction(
     run = function(
         ### argument type declarations
-        x = integer(),
-        e = integer(0), #e, age of entry
-        r = integer(0), #r, age of last known alive
-        s = integer(0), #s, age of known mortality
-        dn1 = integer(0), #last interval of test negative
-        dn = integer(0), #interval of test positive (could be interval of mortality)
-        sex = integer(0),
-        age2date = integer(0),
+        x = integer(0),
+        n_samples = integer(0), # number of samples in dataset
+        e = double(1), #e, age of entry
+        r = double(1), #r, age of last known alive
+        s = double(1), #s, age of known mortality
+        dn1 = double(1), #last interval of test negative
+        dn = double(1), #interval of test positive (could be interval of mortality)
+        sex = double(1),
+        age2date = double(1),
         beta_sex = double(0),
         beta0_sus = double(0),
         beta0_inf = double(0),
@@ -2530,88 +2531,113 @@ dNegCapPosMort <- nimble::nimbleFunction(
         period_lookup=double(1),
         f_period_foi=double(1),
         m_period_foi=double(1),
-        space = double(0),
+		sect = double(1),
+        space = double(1),
         log = double()
         ) {
 
-    llik <- 0 #intialize log-likelihood
-    lam_inf <- nimNumeric(s)
-    lam_foi <- nimNumeric(s)
-    lam_sus <- nimNumeric(s)
-    lik_temp <- nimNumeric(s)
+    sumllik <- 0 #intialize log-likelihood
+	for(i in 1:n_samples){
+		lam_foi <- nimNumeric(s[i] - 1,init=FALSE)
+		lam_sus <- nimNumeric(s[i] - 1,init=FALSE)
+		lam_inf <- nimNumeric(s[i] - 1,init=FALSE)
+		lik_temp  <- 0
+	
+		#############################################
+		# preliminary hazards for the likelihood
+		#############################################
+		if(sex[i] ==1){ # females
+			#survival hazard for susceptible deer
+			lam_sus[e[i]:(dn[i] - 1)] <- exp(beta0_sus  + 
+					age_effect_surv[e[i]:(dn[i] - 1)] +
+					period_effect_surv[(e[i] + age2date[i]):(dn[i] - 1 + age2date[i])] +
+					beta_sex)
+			#survival hazard while infected
+			lam_inf[dn1[i]:(s[i] - 1)] <- exp(beta0_inf +
+					age_effect_surv[dn1[i]:(s[i] - 1)] +
+					period_effect_surv[(dn1[i] + age2date[i]):(s[i] - 1 + age2date[i])] +
+					beta_sex)
+			#force of infection infection hazard
+			lam_foi[1:(dn[i] - 1)] <- exp(space[sect[i]] +
+					f_age_foi[age_lookup_f[1:(dn[i] - 1)]] +
+					f_period_foi[period_lookup[(1 + age2date[i]):(dn[i] - 1 + age2date[i])]])
+		}else{ # males
+			#survival hazard for susceptible deer
+			lam_sus[e[i]:(dn[i] - 1)] <- exp(beta0_sus  + 
+					age_effect_surv[e[i]:(dn[i] - 1)] +
+					period_effect_surv[(e[i] + age2date[i]):(dn[i] - 1 + age2date[i])])
+			#survival hazard while infected
+			lam_inf[dn1[i]:(s[i] - 1)] <- exp(beta0_inf +
+					age_effect_surv[dn1[i]:(s[i] - 1)] +
+					period_effect_surv[(dn1[i] + age2date[i]):(s[i] - 1 + age2date[i])])
+			#force of infection infection hazard
+			lam_foi[1:(dn[i] - 1)] <- exp(space[sect[i]] +
+					m_age_foi[age_lookup_m[1:(dn[i] - 1)]] +
+					m_period_foi[period_lookup[(1 + age2date[i]):(dn[i] - 1 + age2date[i])]])
+		}
 
-    #############################################
-    # preliminary hazards for the likelihood
-    #############################################
-    
-    #survival hazard for susceptible deer
-    n_indx_sus <- length(e:(dn - 1))
-    lam_sus[e:(dn - 1)] <- exp(rep(beta0_sus, n_indx_sus)  + 
-                    age_effect_surv[e:(dn - 1)] +
-                    period_effect_surv[(e + age2date):(dn - 1 + age2date)] +
-                    rep(beta_sex * sex, n_indx_sus))
-    
-    #survival hazard while infected
-    n_indx_inf <- length(dn1:(s - 1))
-    lam_inf[dn1:(s - 1)] <- exp(rep(beta0_inf, n_indx_inf) +
-        age_effect_surv[dn1:(s - 1)] +
-        period_effect_surv[(dn1 + age2date):(s - 1 + age2date)] +
-        rep(beta_sex * sex, n_indx_inf)
-        )
-
-    #force of infection infection hazard
-    lam_foi[1:(dn - 1)] <- exp(rep(space, dn - 1) +
-        sex * (f_age_foi[age_lookup_f[1:(dn - 1)]] +
-            f_period_foi[period_lookup[(1 + age2date):(dn - 1 + age2date)]]) +
-        (1 - sex) * (m_age_foi[age_lookup_m[1:(dn - 1)]] +
-            m_period_foi[period_lookup[(1 + age2date):(dn - 1 + age2date)]])
-        )
-    #######################################
-    ### calculating the joint likelihood
-    #######################################
-
-    lik_temp[dn1 + 1] <- lam_foi[dn1 + 1] *
-                      exp(-sum(lam_inf[(dn1 + 1):(r - 1)])) *
-                      (1 - exp(-sum(lam_inf[r:(s - 1)])))
-
-    for (k in (dn1 + 2):(r - 2)) {
-        lik_temp[k] <- lam_foi[k] *
-                      exp(-sum(lam_foi[(dn1 + 1):k])) *
-                      exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
-                      exp(-sum(lam_inf[k:(r - 1)])) *
-                      (1 - exp(-sum(lam_inf[r:(s - 1)])))
-    }
-    for (k in (r - 1):(s - 2)) {
-        lik_temp[k] <- lam_foi[k] *
-                      exp(-sum(lam_foi[(dn1 + 1):k])) *
-                      exp(-sum(lam_sus[(dn1 + 1):(k - 1)])) *
-                      (1 - exp(-sum(lam_inf[k:(s - 1)])))
-    }
-    lik_temp[(s - 1)] <- lam_foi[(s - 1)] *
-                        exp(-sum(lam_foi[(dn1 + 1):(s - 1)])) *
-                        exp(-sum(lam_sus[(dn1 + 1):((s - 1) - 1)])) *
-                        lam_inf[(s - 1)]
-    lik <- exp(-sum(lam_sus[e:dn1])) *
-           exp(-sum(lam_foi[1:dn1])) *
-           sum(lik_temp[(dn1 + 1):(s - 1)])
-
-    llik <- log(lik)
-
+		#######################################
+		### calculating the joint likelihood
+		#######################################
+	
+		if((r[i] - dn1[i]) > 1){
+			lik_temp[dn1[i] + 1] <- lam_foi[dn1[i] + 1] *
+						exp(-sum(lam_inf[(dn1[i] + 1):(r[i] - 1)])) *
+						(1 - exp(-sum(lam_inf[r[i]:(s[i] - 1)])))
+			lik_temp[(s[i] - 1)] <- lam_foi[(s[i] - 1)] *
+							exp(-sum(lam_foi[(dn1[i] + 1):((s[i] - 1) - 1)])) *
+							#exp(-sum(lam_foi[(dn1[i] + 1):(s[i] - 1)])) *
+							exp(-sum(lam_sus[(dn1[i] + 1):((s[i] - 1) - 1)])) *
+							lam_inf[(s[i] - 1)]
+		}
+	
+		if((r[i] - dn1[i]) == 1){
+			lik_temp[(s[i] - 1)] <- lam_foi[(s[i] - 1)] *
+							lam_inf[(s[i] - 1)]
+		}
+		
+		if((r[i] - dn1[i]) > 3){
+		for (k in (dn1[i] + 2):(r[i] - 2)) {
+			lik_temp[k] <- lam_foi[k] *
+						exp(-sum(lam_foi[(dn1[i] + 1):(k - 1)])) *
+						#exp(-sum(lam_foi[(dn1[i] + 1):k])) *
+						exp(-sum(lam_sus[(dn1[i] + 1):(k - 1)])) *
+						exp(-sum(lam_inf[k:(r[i] - 1)])) *
+						(1 - exp(-sum(lam_inf[r[i]:(s[i] - 1)])))
+		}
+		}
+		if((r[i] - dn1[i]) > 2){
+		for (k in (r[i] - 1):(s[i] - 2)) {
+			lik_temp[k] <- lam_foi[k] *
+						exp(-sum(lam_foi[(dn1[i] + 1):(k - 1)])) *
+						#exp(-sum(lam_foi[(dn1[i] + 1):k])) *
+						exp(-sum(lam_sus[(dn1[i] + 1):(k - 1)])) *
+						(1 - exp(-sum(lam_inf[k:(s[i] - 1)])))
+		}
+		}
+							
+		sumllik <- sumllik -sum(lam_sus[e[i]:dn1[i]]) -
+			sum(lam_foi[1:dn1[i]]) +
+			log(sum(lik_temp[(dn1[i] + 1):(s[i] - 1)]))
+	
+	}
     returnType(double(0))
-    if(log) return(llik) else return(exp(llik))    ## return log-likelihood
+    if(log) return(sumllik) else return(exp(sumllik))    ## return log-likelihood
   })
 
 
 nimble::registerDistributions(list(
     dNegCapPosMort = list(
-        BUGSdist = 'dNegCapPosMort(e,r,s,dn1,dn,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,space)',
-        types = c("e = integer(0)",
-                  "r = integer(0)",
-                  "s = integer(0)",
-                  "dn1 = integer(0)",
-                  "dn = integer(0)",
-                  "sex = integer(0)",
-                  "age2date = integer(0)",
+        BUGSdist = 'dNegCapPosMort(n_samples,e,r,s,dn1,dn,sex,age2date,beta_sex,beta0_sus,beta0_inf,age_effect_surv,period_effect_surv,f_age_foi,m_age_foi,age_lookup_f,age_lookup_m,f_period_foi,m_period_foi,period_lookup,sect,space)',
+        types = c("value = integer(0)",
+				  "n_samples = integer(0)",
+				  "e = double(1)",
+                  "r = double(1)",
+                  "s = double(1)",
+                  "dn1 = double(1)",
+				  "dn = double(0)",
+                  "sex = double(1)",
+                  "age2date = double(1)",
                   "beta_sex = double(0)",
                   "beta0_sus = double(0)",
                   "beta0_inf = double(0)",
@@ -2624,6 +2650,7 @@ nimble::registerDistributions(list(
                   "period_lookup = double(1)",
                   "f_period_foi = double(1)",
                   "m_period_foi = double(1)",
+				  "sect = double(1)",
                   "space = double(0)",
                   "log = double()"
                   ),
@@ -2634,58 +2661,32 @@ nimble::registerDistributions(list(
 ### for a user-defined distribution
 assign('dNegCapPosMort', dNegCapPosMort, envir = .GlobalEnv)
 
-# i=1
-# dNegCapPosMort(
-#         x = 1,
-#         e = d_fit_idead$left_age_e[i],
-#         r = d_fit_idead$right_age_r[i],
-#         s = d_fit_idead$right_age_s[i],
-#         dn1 = d_fit_idead$left_age_e[i],
-#         dn = d_fit_idead$right_age_s[i],
-#         sex = d_fit_idead$sex[i],
-#         age2date = idead_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         )
-
-# test <- c()
-# for(i in 1:nrow(d_fit_idead)){
-# test[i] <- dNegCapPosMort(
-#         x = 1,
-#         e = d_fit_idead$left_age_e[i],
-#         r = d_fit_idead$right_age_r[i],
-#         s = d_fit_idead$right_age_s[i],
-#         dn1 = d_fit_idead$left_age_e[i],
-#         dn = d_fit_idead$right_age_s[i],
-#         sex = d_fit_idead$sex[i],
-#         age2date = idead_age2date[i],
-#         beta_sex = beta_sex,
-#         beta0_sus = beta0_sus,
-#         beta0_inf = beta0_inf,
-#         age_effect_surv = age_effect_survival_test,
-#         period_effect_surv = period_effect_survival_test,
-#         f_age_foi = f_age_foi,
-#         m_age_foi = m_age_foi,
-#         age_lookup_f = age_lookup_col_f,
-#         age_lookup_m = age_lookup_col_m,
-#         period_lookup = period_lookup,
-#         f_period_foi = f_period_foi,
-#         m_period_foi = m_period_foi,
-#         space = 0,
-#         log = TRUE
-#         )
-#  }
-# test
-
+start <- Sys.time()
+test <-  dNegCapPosMort(
+        x = 1,
+		  n_samples = nrow(d_fit_idead),
+        e = d_fit_idead$left_age_e,
+        r = d_fit_idead$right_age_r,
+        s = d_fit_idead$right_age_s,
+        dn1 = d_fit_idead$left_age_e,
+        dn = d_fit_idead$right_age_s,
+        sex = d_fit_idead$sex,
+        age2date = idead_age2date,
+        beta_sex = beta_sex,
+        beta0_sus = beta0_sus,
+        beta0_inf = beta0_inf,
+        age_effect_surv = age_effect_survival_test,
+        period_effect_surv = period_effect_survival_test,
+        f_age_foi = f_age_foi,
+        m_age_foi = m_age_foi,
+        age_lookup_f = age_lookup_col_f,
+        age_lookup_m = age_lookup_col_m,
+        period_lookup = period_lookup,
+        f_period_foi = f_period_foi,
+        m_period_foi = m_period_foi,
+		  sect = d_fit_idead$sect,
+        space = rep(0,n_sect),
+        log = TRUE
+        )
+(end<- Sys.time()-start)
+test

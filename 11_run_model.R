@@ -575,13 +575,13 @@ modelcode <- nimbleCode({
       space = space[1:n_sect],
       sect = sect_icap_mort[1:nIcapMort]
       )
-  
+
 
 #######################################################################
 ###
 ###   User defined distribution for likelihood for
 ###   uninfected deer that were test neg at capture,
-###   then test negative at recap, that are right censored, 
+###   then test negative at recap, that are right censored,
 ###   and have been tested post censoring
 ###
 ###   d_fit_rec_neg_cens_posttest
@@ -1013,7 +1013,7 @@ initsFun <- function()list(
                           )
 nimInits <- initsFun()
 
-# start_Rmodel <- Sys.time()
+start_Rmodel <- Sys.time()
 Rmodel <- nimbleModel(code = modelcode,
                       constants = nimConsts,
                       data = nimData,
@@ -1021,7 +1021,7 @@ Rmodel <- nimbleModel(code = modelcode,
                       calculate = FALSE,
                       check = FALSE
                       )
-# end_Rmodel <- Sys.time() - start_Rmodel
+endtime_Rmodel <- Sys.time() - start_Rmodel
 # Rmodel$initializeInfo()
 for(i in 1:10){beepr::beep(1)}
 
@@ -1064,16 +1064,16 @@ confMCMC <- configureMCMC(Rmodel,
                          useConjugacy = FALSE)
 nimMCMC <- buildMCMC(confMCMC)
 
-starttime <- Sys.time()
+start_compile_rmodel <- Sys.time()
 Cnim <- compileNimble(Rmodel)
-(end_com_nim <- Sys.time() - starttime)
-for(i in 1:10){beepr::beep(1)}
+(endtime_compile_rmodel <- Sys.time() - start_compile_rmodel)
+for(i in 1:10) {beepr::beep(1)}
 
-starttime <- Sys.time()
+start_compile_mcmc <- Sys.time()
 CnimMCMC <- compileNimble(nimMCMC,
                          project = Rmodel)
-(end_com_mcmc <- Sys.time() - starttime)
-for(i in 1:10){beepr::beep(1)}
+(endtime_compile_mcmc <- Sys.time() - start_compile_mcmc)
+for (i in 1:10) {beepr::beep(1)}
 
 set.seed(7654321)
 starttime <- Sys.time()
@@ -1094,15 +1094,15 @@ for (i in 1:10) {beepr::beep(1)}
 # end_Rmodel
 # endtime_rmodel_compile
 # endtime_mcmc
-runtime
+# runtime
 
 sink("runtime_allsteps.txt")
-# cat("Rmodel:\n")
-# end_Rmodel
-# cat("\nCompile Rmodel:\n")
-# endtime_rmodel_compile
-# cat("\nCompile MCMC:\n")
-# endtime_mcmc
+cat("Rmodel:\n")
+endtime_Rmodel
+cat("\nCompile Rmodel:\n")
+endtime_rmodel_compile
+cat("\nCompile MCMC:\n")
+endtime_mcmc
 cat("\nRun MCMC 1000 iter: ")
 cat(runtime)
 sink()

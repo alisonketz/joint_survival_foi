@@ -1103,9 +1103,9 @@ sink("runtime_allsteps.txt")
 cat("Rmodel:\n")
 endtime_Rmodel
 cat("\nCompile Rmodel:\n")
-endtime_rmodel_compile
+endtime_compile_rmodel
 cat("\nCompile MCMC:\n")
-endtime_mcmc
+endtime_compile_mcmc
 cat("\nRun MCMC 1000 iter: ")
 cat(runtime)
 sink()

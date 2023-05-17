@@ -41,7 +41,6 @@ library(splines)
 library(MetBrewer)
 library(ggforce)
 
-
 ###########################################################
 ### Source summary function for posteriors
 ###########################################################

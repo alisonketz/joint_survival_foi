@@ -342,14 +342,9 @@ d_cap$ageatcap[indx_impute_female] <- nimble::rcat(length(indx_impute_female),pr
 d_cap$ageatcap[indx_impute_male] <- nimble::rcat(length(indx_impute_male),prob=prob_age_male)+1.5
 set.seed(1946)
 
-
 #converting age at capture to numeric
 d_cap$ageatcap <- as.numeric(d_cap$ageatcap)
-# d_cap$ageatcap[indx_impute_female]
-# d_surv[d_surv$lowtag %in% d_cap$lowtag[indx_impute_female],]
-# d_surv$lowtag[d_surv$lowtag %in% d_cap$lowtag[indx_impute_female]]
 
-# d_cap[indx_impute_female,c(4,5,27,42,116)]
 #calculating age at capture in months
 # for(j in 2005:2017){cat(week(paste(j,"-05-21",sep="")),"\n")}
 #21 week of year
@@ -572,10 +567,7 @@ d_mort$mortalertdate <- as.Date(d_mort$mortalertdate, format = "%Y-%m-%d")
 d_mort$collarfound <- as.Date(d_mort$collarfound, format = "%Y-%m-%d")
 d_cens$censordate <- as.Date(d_cens$censordate , format = "%Y-%m-%d")
 
-# lowtags that should be censored and lowtags that should be morts
 # which should these be censored and which should be morts?
-# d_mort[d_mort$lowtag %in% d_cens$lowtag,]
-
 low_cens_inmort <- d_cens$lowtag[d_cens$lowtag %in% d_mort$lowtag]
 
 mortdate <- list()
@@ -681,13 +673,13 @@ levels(d_mort$cause1) <- c("anthro",# accident
                            "disease", #enterocolitis
                            "anthro",#eutenasia
                            "anthro",#euthanasia
-                           "disease",#"gastroenteritis"  
+                           "disease",#"gastroenteritis"
                            "anthro",#"haybine"
                            "hunt",#hunter harvest"
-                           "disease",#"infection"        
+                           "disease",#"infection"
                            "anthro",# injury
                            "pneumonia",# pneumonia
-                           "anthro",#poaching         
+                           "anthro",#poaching
                            "predation", #predation
                            "starvation",#starvation
                            "anthro",# "vehicle collision"

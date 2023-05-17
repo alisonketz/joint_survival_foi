@@ -1,7 +1,7 @@
 
 ################################################################
 ###
-### separating survival into 3 classes
+### separating survival data into likelihood specific classes
 ###
 ################################################################
 
@@ -146,17 +146,6 @@ d_fit_icap_mort$fast <- ifelse(d_fit_icap_mort$left_age_e ==
 ###
 ###############################################################
 
-# d_fit_sus_cens 
-# d_fit_sus_mort 
-# d_fit_icap_cens
-# d_fit_icap_mort
-# d_fit_rec_neg_cens
-# d_fit_rec_neg_mort
-# d_fit_rec_pos_cens
-# d_fit_rec_pos_mort
-# d_fit_idead
-# d_fit_endlive
-
 num_observations <- rbind(n_fit_hunt_neg,
         n_fit_hunt_pos,
         n_fit_sus_cens_posttest,
@@ -197,12 +186,11 @@ write.csv(obs_sample_sizes, file = "obs_sample_sizes.csv", row.names=FALSE)
 
 d_fit_icap_cens$left_period_e - d_fit_icap_cens$left_age_e
 
-png("icap_birth_relative_study.png")
+png("figures/icap_birth_relative_study.png")
 hist(d_fit_icap_mort$left_period_e - d_fit_icap_mort$left_age_e,breaks=100)
 dev.off()
 
 
-obs_sample_sizes_desc <- read.csv("../obs_sample_sizes_description.csv")
-
+# obs_sample_sizes_desc <- read.csv("../obs_sample_sizes_description.csv")
 # print(xtable(obs_sample_sizes_desc),include.rownames=FALSE)
 

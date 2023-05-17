@@ -34,14 +34,12 @@ age_lookup_col_inf_f  <- age_lookup_col_inf_m <- age_lookup_col_inf <- age_looku
 age_lookup_col_inf_m[age_lookup_col_inf_m == 7] <- 6
 n_age_lookup_col_inf <- length(age_lookup_col_inf)
 
-pre_study_weeks <- max(d_fit_icap_mort$left_age_e) - d_fit_icap_mort$left_period_e[which.max(d_fit_icap_mort$left_age_e)] + 1
-difftime("2002-01-01","2019-02-15",units="weeks")
-
+# pre_study_weeks <- max(d_fit_icap_mort$left_age_e) - d_fit_icap_mort$left_period_e[which.max(d_fit_icap_mort$left_age_e)] + 1
+# difftime("2002-01-01","2019-02-15",units="weeks")
 # 187 months before "2017-01-01"  
 #= 15 years and 6 months prior to start of collar study
 # 2002-01-01 is when CWD was first detected in wisconsin surveillance data
-
-as.POSIXct("2019-02-15") - years(17)
+# as.POSIXct("2019-02-15") - years(17)
 # period_lookup_col_inf <- c(rep(1, 6),rep(1:20, each = 12), rep(21,5))
 # n_period_lookup_col_inf <- length(period_lookup_col_inf)
 

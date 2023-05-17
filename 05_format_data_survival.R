@@ -31,7 +31,7 @@ n_mort <- nrow(d_mort)
 n_cens <- nrow(d_cens)
 
 #initialize matrix of captures/recaptures/morts
-d_surv <- data.frame(matrix(NA, nr = n_cap, nc = 28))
+d_surv <- data.frame(matrix(NA, nr = n_cap, nc = 30))
 names(d_surv)  <- c("left_period_e","right_period_r","right_period_s",
                 "censored",
                 "cwd_cap",
@@ -50,7 +50,9 @@ names(d_surv)  <- c("left_period_e","right_period_r","right_period_s",
                 "smonth",
                 "recap_cwd",
                 "ageweek_recap",
+                "agemonth_recap",
                 "periodweek_recap",
+                "periodmonth_recap",
                 "dsection"
                 )
 
@@ -58,7 +60,7 @@ names(d_surv)  <- c("left_period_e","right_period_r","right_period_s",
 d_surv$censored <- 1
 
 #initialize with 0's al remaining columns
-d_surv[,5:27] <- 0
+d_surv[,5:ncol(d_surv)] <- 0
 
 #Filling d_surv with all times
 d_surv$left_period_e  <-  df_cap$eweek#e
@@ -70,7 +72,9 @@ d_surv$left_age_e <- df_cap$ageweek_cap
 d_surv$emonth <- df_cap$emonth
 d_surv$recap_cwd <- df_cap$recap_cwd
 d_surv$ageweek_recap <- df_cap$recap_disagewk
+d_surv$agemonth_recap <- df_cap$recap_disagemth
 d_surv$periodweek_recap <- df_cap$recap_disweek
+d_surv$periodmonth_recap <- df_cap$recap_dismonth
 d_surv$dsection <- df_cap$home_section
 
 for(i in 1:n_cap) {
@@ -165,7 +169,6 @@ min_age <- min(d_surv$left_age_e)
 max_ager <- max(d_surv$right_age_r, na.action = TRUE)
 max_ages <- max(d_surv$right_age_s, na.rm = TRUE)
 
-
 ###
 ### left_age/right age in months
 ###
@@ -182,9 +185,7 @@ d_surv$smonth[fix_month_indx] <- d_surv$smonth[fix_month_indx] + 1
 d_surv$right_age_rmonth <- d_surv$left_age_month + d_surv$rmonth - d_surv$emonth
 d_surv$right_age_smonth <- d_surv$left_age_month + d_surv$smonth - d_surv$emonth
 # d_surv$right_age_rmonth[d_surv$right_age_rmonth == 0] <- 1
-
 # d_surv$left_age_month>d_surv$right_age_rmonth
-
 # d_surv[d_surv$left_age_month>d_surv$right_age_rmonth,]
 # d_surv[d_surv$left_age_month==d_surv$right_age_smonth,]
 # d_surv$right_age_smonth[d_surv$right_age_smonth==1] <- 2 #for fast morts, these should be right_age_smonth=2
@@ -201,14 +202,12 @@ d_surv$right_period_r[which(d_surv$right_period_r - d_surv$left_period_e < 1 & d
   d_surv$right_period_r[which(d_surv$right_period_r - d_surv$left_period_e < 1 & d_surv$censored == 1)] +1
 
 #fixing fast mortalities individuals
-length(which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0))
 d_surv$right_age_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0)] <- 
   d_surv$right_age_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0)] + 1
 d_surv$right_period_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0)] <- 
   d_surv$right_period_s[which(d_surv$right_period_s - d_surv$left_period_e < 1 & d_surv$censored == 0)] + 1
 
 fix_fast_mortalities_indx <- d_surv$right_age_r == 0
-d_surv$lowtag[fix_fast_mortalities_indx]
 d_surv$right_period_r[fix_fast_mortalities_indx] <- d_surv$left_period_e[fix_fast_mortalities_indx]
 d_surv$right_age_r[fix_fast_mortalities_indx] <- 1
 
@@ -218,7 +217,6 @@ d_surv$right_age_r[fix_fast_mortalities_indx] <- 1
 fix_fast_mortalities_nonneonate_indx <- which(d_surv$lowtag %in% c(5080,5219))
 d_surv$right_period_r[fix_fast_mortalities_nonneonate_indx] <- d_surv$left_period_e[fix_fast_mortalities_nonneonate_indx]
 d_surv$right_age_r[fix_fast_mortalities_nonneonate_indx] <- d_surv$left_age_e[fix_fast_mortalities_nonneonate_indx] 
-
 
 ##################################################
 ###
@@ -230,9 +228,9 @@ d_surv$right_age_r[fix_fast_mortalities_nonneonate_indx] <- d_surv$left_age_e[fi
 ##################################################
 
 censor_fix_low <- c(6817,6876,5153)
-d_surv[d_surv$lowtag==6817,]
-d_surv[d_surv$lowtag==6876,]
-d_surv[d_surv$lowtag==5153,]
+d_surv[d_surv$lowtag == 6817,]
+d_surv[d_surv$lowtag == 6876,]
+d_surv[d_surv$lowtag == 5153,]
 
 #these should have the recap ageweek and period week set to 0,
 d_surv$ageweek_recap[d_surv$lowtag %in% censor_fix_low] <- 0
@@ -252,7 +250,8 @@ low_recap_neg <- low_recap_neg[-rm_censor_fix_neg]
 ###
 ### removing the deer that were VERY fast
 ### right censors. i.e., lost collars within
-### first week after capture
+### first week after capture, these don't contribute
+### any information to estimate the effects
 ###
 ### 5052 6400 6081 5257 7113 7787
 ###
@@ -262,3 +261,42 @@ low_remove_fast_cens <- c(5052, 6400, 6081, 5257, 7113, 7787)
 
 d_surv <- d_surv[!(d_surv$lowtag %in% low_remove_fast_cens),]
 n_surv <- nrow(d_surv)
+
+##########################################################################
+###
+### calibrating collar study time with start of harvest study time
+### rescaling the origin of the  period effects
+### from the collar study start to overall 
+### pop model start 
+###
+##########################################################################
+
+#the first birth is in 1992
+# weekly calculation
+nT_period_overall <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dweeks(1)) - 1
+nT_period_precollar <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dweeks(1)) - 1
+nT_period_collar <- nT_period_overall - nT_period_precollar
+
+# monthly calculation of constants
+nT_period_overall_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2022-05-15"))/dmonths(1)) - 1
+nT_period_precollar_m <- floor(as.duration(ymd("1992-05-15") %--% ymd("2017-01-07"))/dmonths(1)) - 1
+nT_period_collar_m <- nT_period_overall_m - nT_period_precollar_m
+
+#recalibrating periods of collar data
+#weekly adjustment
+
+d_surv$left_period_e <- d_surv$left_period_e + nT_period_precollar
+d_surv$right_period_r <- d_surv$right_period_r + nT_period_precollar
+d_surv$right_period_s <- d_surv$right_period_s + nT_period_precollar
+d_surv$periodweek_recap[d_surv$periodweek_recap != 0] <- 
+          d_surv$periodweek_recap[d_surv$periodweek_recap != 0] + 
+          nT_period_precollar
+
+#monthly adjustment
+d_surv$emonth <- d_surv$emonth + nT_period_precollar_m
+d_surv$rmonth <- d_surv$rmonth + nT_period_precollar_m
+d_surv$smonth <- d_surv$smonth + nT_period_precollar_m
+d_surv$periodmonth_recap[d_surv$periodmonth_recap != 0] <- 
+          d_surv$periodmonth_recap[d_surv$periodmonth_recap != 0] + 
+          nT_period_precollar_m
+

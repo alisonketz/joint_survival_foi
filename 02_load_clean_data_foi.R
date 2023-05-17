@@ -100,7 +100,14 @@ cwd_df$agedays[cwd_df$age_num==9 & cwd_df$sex == 0] <- max(male6$agedays)
 ### aging into the next age class
 #######################################################
 
-cwd_df$ageweeks[cwd_df$age_num == 9 & cwd_df$sex == 0] <- 467#max(male6$ageweeks)
-cwd_df$agemonths[cwd_df$age_num == 9 & cwd_df$sex == 0] <- 107#max(male6$agemonths)
+# hist(cwd_df$ageweeks)
+
+# cwd_df$ageweeks[cwd_df$age_num == 9 & cwd_df$sex == 0] <- 467#max(male6$ageweeks)
+# cwd_df$agemonths[cwd_df$age_num == 9 & cwd_df$sex == 0] <- 107#max(male6$agemonths)
+cwd_df$ageweeks[cwd_df$age_num == 9 & cwd_df$sex == 0] <- 338#max(male6$ageweeks)
+cwd_df$agemonths[cwd_df$age_num == 9 & cwd_df$sex == 0] <- 78#max(male6$agemonths)
+cwd_df$agemonths[cwd_df$agemonths > 78 & cwd_df$sex == 0] <- 78#max(male6$agemonths)
+
+
 cwd_df$age_num[cwd_df$age_num == 9 & cwd_df$sex == 0] <- 6
 ageclass <- as.numeric(levels(as.factor(cwd_df$age_num)))

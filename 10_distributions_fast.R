@@ -2097,34 +2097,34 @@ nimble::registerDistributions(list(
 ###for a user-defined distribution
 assign('dRecPosCens', dRecPosCens, envir = .GlobalEnv)
 
-start <- Sys.time()
-test <-  dRecPosCens(
-        x = 1,
-		#   n_samples = nrow(d_fit_rec_pos_cens),
-        e = d_fit_rec_pos_cens$left_age_e,
-        r = d_fit_rec_pos_cens$right_age_r,
-        dn1 = d_fit_rec_pos_cens$left_age_e,
-        dn = d_fit_rec_pos_cens$ageweek_recap,
-        sex = d_fit_rec_pos_cens$sex,
-        age2date = rec_pos_cens_age2date,
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = 0,#rep(0,n_sect),
-		# sect = d_fit_rec_pos_cens$sect,
-        log = TRUE
-        )
-(end<- Sys.time()-start)
-test
+# start <- Sys.time()
+# test <-  dRecPosCens(
+#         x = 1,
+# 		#   n_samples = nrow(d_fit_rec_pos_cens),
+#         e = d_fit_rec_pos_cens$left_age_e,
+#         r = d_fit_rec_pos_cens$right_age_r,
+#         dn1 = d_fit_rec_pos_cens$left_age_e,
+#         dn = d_fit_rec_pos_cens$ageweek_recap,
+#         sex = d_fit_rec_pos_cens$sex,
+#         age2date = rec_pos_cens_age2date,
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = 0,#rep(0,n_sect),
+# 		# sect = d_fit_rec_pos_cens$sect,
+#         log = TRUE
+#         )
+# (end<- Sys.time()-start)
+# test
 
 #######################################################################
 ###
@@ -2292,33 +2292,33 @@ nimble::registerDistributions(list(
 ### for a user-defined distribution
 assign('dNegCapPosMort', dNegCapPosMort, envir = .GlobalEnv)
 
-start <- Sys.time()
-test <-  dNegCapPosMort(
-        x = 1,
-		n_samples = nrow(d_fit_idead),
-        e = d_fit_idead$left_age_e,
-        r = d_fit_idead$right_age_r,
-        s = d_fit_idead$right_age_s,
-        dn1 = d_fit_idead$left_age_e,
-        dn = d_fit_idead$right_age_s,
-        sex = d_fit_idead$sex,
-        age2date = idead_age2date,
-        beta_sex = beta_sex,
-        beta0_sus = beta0_sus,
-        beta0_inf = beta0_inf,
-        age_effect_surv = age_effect_survival_test,
-        period_effect_surv = period_effect_survival_test,
-        f_age_foi = f_age_foi,
-        m_age_foi = m_age_foi,
-        age_lookup_f = age_lookup_col_f,
-        age_lookup_m = age_lookup_col_m,
-        period_lookup = period_lookup,
-        f_period_foi = f_period_foi,
-        m_period_foi = m_period_foi,
-        space = rep(0,n_sect),
-		sect = d_fit_idead$sect,
-        log = TRUE
-        )
-(end<- Sys.time()-start)
-test
+# start <- Sys.time()
+# test <-  dNegCapPosMort(
+#         x = 1,
+# 		n_samples = nrow(d_fit_idead),
+#         e = d_fit_idead$left_age_e,
+#         r = d_fit_idead$right_age_r,
+#         s = d_fit_idead$right_age_s,
+#         dn1 = d_fit_idead$left_age_e,
+#         dn = d_fit_idead$right_age_s,
+#         sex = d_fit_idead$sex,
+#         age2date = idead_age2date,
+#         beta_sex = beta_sex,
+#         beta0_sus = beta0_sus,
+#         beta0_inf = beta0_inf,
+#         age_effect_surv = age_effect_survival_test,
+#         period_effect_surv = period_effect_survival_test,
+#         f_age_foi = f_age_foi,
+#         m_age_foi = m_age_foi,
+#         age_lookup_f = age_lookup_col_f,
+#         age_lookup_m = age_lookup_col_m,
+#         period_lookup = period_lookup,
+#         f_period_foi = f_period_foi,
+#         m_period_foi = m_period_foi,
+#         space = rep(0,n_sect),
+# 		sect = d_fit_idead$sect,
+#         log = TRUE
+#         )
+# (end<- Sys.time()-start)
+# test
 

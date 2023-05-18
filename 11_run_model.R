@@ -1081,7 +1081,7 @@ for (i in 1:10) {beepr::beep(1)}
 set.seed(7654321)
 starttime <- Sys.time()
 mcmcout <- runMCMC(CnimMCMC,
-                  niter = 1000,
+                  niter = 1,
                   nburnin = 0,
                   nchains = 1,
                   inits = initsFun,

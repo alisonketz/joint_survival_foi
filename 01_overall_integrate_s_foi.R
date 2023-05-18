@@ -84,8 +84,8 @@ source("09_prelim_collar_foi.R")
 ### Run model
 ###########################################################
 
-source("10_distributions_check.R")
-source("10_distributions.R")
+# source("10_distributions_check.R")
+source("10_distributions_fast.R")
 
 ###########################################################
 ### Run model
